@@ -1,0 +1,85 @@
+---
+title: "Data Cleaning and Descriptive Statistics"
+author: "Allison McCarty"
+date: "2/8/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#Install Libraries
+library(readxl)
+library(tidyverse)
+library(dplyr)
+library(pastecs)
+library(data.table)
+library(formattable)
+library(tidyr)
+
+dat1 <- read_excel("Practicum 1 Data.xlsx")
+sum(apply(dat1, 1, function(x){any(is.na(x))})) # every single observation has a N/A for at least one variable
+```
+
+The first obvious challenge is that this dataset does not include a single complete case.  In otherwords, every single observation at least has one variable populated with "N/A".  Thus, using a function such as complete.cases would be highly problematic in this circumstance (we would have no data left). 
+
+There are also a lot of variables.  Let's focus specifically on the 13 mentioned in the Write-Up.
+
+```{r datacleaning}
+#Select variables of interest
+myvars <- c("shift", "gender", "Age", "height", "weightgain", "lbs_gained", "pounds_gained", "bweight", "BMI", "VigTime", "WalkTime", "ModTime", "Total_Met_Min")
+pracdat <- dat1[myvars]
+
+#Check for observations with any NAs in the filtered dataset
+sum(apply(pracdat, 1, function(x){any(is.na(x))})) #Most (264/392) have some N/As, therefore we still cannot do a full N/A omit for this data
+
+#Get rid of observations that do not have ANY variables populated
+all.na <- (apply(pracdat, 1, function(x){all(is.na(x))}))
+pracdat <- data.frame(pracdat, all.na)
+pracdat <- subset(pracdat, all.na == "FALSE")
+
+# Go back and overwrite Total metabolic minutes
+# Here is the equation to find total metabolic minutes from the other data available to us
+# Total Metabolic Mintues = 8*VigTime + 4*ModTime + 3.3*WalkTime
+# Perform the calculation for all of the observations and overwrite the column in the original dataframe
+pracdat$Total_Met_Min = 8*pracdat$VigTime + 4*pracdat$ModTime + 3.3*pracdat$WalkTime
+sum(apply(pracdat, 1, function(x){any(is.na(x))})) # Now we have 189 complete cases (61 more than before)
+
+# Remove observations that do not have data for total metabolic minutes, shift, lbs gained, or weight gain (binary)
+pracdat <- pracdat[complete.cases(pracdat[c(1, 5, 6, 13)]),]
+```
+
+Now, lets do descriptive statistics
+```{r num_datacleaning}
+#Only for qualitative
+summary(pracdat[3:13])
+
+
+quandat <- stat.desc(pracdat[3:13])
+options(scipen=100)
+options(digits=2)
+descriptives.df <- stat.desc(pracdat[c(3:4, 7:13)], basic = F)
+names(descriptives.df) <- c("Age", "Height", "Pounds Gaines", "Body Weight", "BMI", "Vigorous Activity Minutes", "Walking Minutes", "Moderate Activity Minutes", "Total Metabolic Minutes")
+formattable(descriptives.df, align =c("l", rep("c", rep(8)), "r"))
+
+
+#Let's also do the categorical
+#Gender First
+(gender.df <- table(pracdat$gender))
+gender.df<- data.frame(gender.df)
+colnames(gender.df)[1] <- "Gender"
+
+
+#Now Shift
+(shift.df <- table(pracdat$shift))
+shift.df<- data.frame(shift.df)
+colnames(shift.df)[1] <- "Shift"
+formattable(shift.df)
+
+#Visualize the categorical variables (probably will not be included in practicum 1)
+library(ggpubr)
+ggbarplot(gender.df, x = "Gender", y = "Freq", combine = TRUE)
+ggbarplot(shift.df, x = "Shift", y = "Freq", fill= "cornflowerblue", main = "Shift distribution of Sample Population" )
+
+ggplot(pracdat, aes(x = shift)) + geom_dotplot(binwidth = .1)
+```
