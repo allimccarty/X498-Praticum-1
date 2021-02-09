@@ -46,13 +46,14 @@ pracdat$Total_Met_Min = 8*pracdat$VigTime + 4*pracdat$ModTime + 3.3*pracdat$Walk
 sum(apply(pracdat, 1, function(x){any(is.na(x))})) # Now we have 189 complete cases (61 more than before)
 
 # Remove observations that do not have data for total metabolic minutes, shift, lbs gained, or weight gain (binary)
-pracdat <- pracdat[complete.cases(pracdat[c(1, 5, 6, 13)]),]
 sum(complete.cases(pracdat[1])) #348 out of 392 observations have data on shift
 sum(complete.cases(pracdat[5])) #348 out of 392 observations have data on lbs gained
 sum(complete.cases(pracdat[6])) #232 of the 392 observations have binary weight gain data
 sum(complete.cases(pracdat[13])) #351 of the 392 observations have metabolic minutes data
 
+
 #For now we will just remove all of the observations that do not have complete cases for the four aforementioned variables (***ASK ABOUT THIS?***)
+pracdat <- pracdat[complete.cases(pracdat[c(1, 5, 6, 13)]),]
 ```
 
 Now, lets do descriptive statistics
