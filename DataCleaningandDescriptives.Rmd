@@ -66,7 +66,14 @@ options(scipen=100)
 options(digits=2)
 descriptives.df <- stat.desc(pracdat[c(3:4, 7:13)], basic = F)
 names(descriptives.df) <- c("Age", "Height", "Pounds Gaines", "Body Weight", "BMI", "Vigorous Activity Minutes", "Walking Minutes", "Moderate Activity Minutes", "Total Metabolic Minutes")
-formattable(descriptives.df, align =c("l", rep("c", rep(8)), "r"))
+formattable(descriptives.df, align =c("l", rep("c", rep(8)), "r"), caption = "Descriptive Statistics for Quantitative Variables")
+
+# We could also do this as a kable
+library(kableExtra)
+library(gridExtra)
+descriptives.df %>%
+kbl(caption = "Descriptive Statistics for Quantitative Variables", label = "Table 1") %>% kable_paper("hover", full_width = F)
+
 
 #Let's also do the categorical
 #Gender First
@@ -77,7 +84,8 @@ colnames(gender.df)[1] <- "Gender"
 gender.try <- pracdat %>% 
   count(gender) %>%
   mutate(prop = prop.table(n))
-formattable(as.data.frame(gender.try), align=c("l", "c", "r"))
+formattable(as.data.frame(gender.try), align=c("l", "c", "r"), caption = "Gender Frequency and Proportion Distribution for Sample Population")
+
 
 #Now Shift
 (shift.df <- table(pracdat$shift))
@@ -88,12 +96,28 @@ formattable(shift.df)
 shift.try <- pracdat %>% 
   count(shift) %>%
   mutate(prop = prop.table(n))
-formattable(as.data.frame(shift.try))
+formattable(as.data.frame(shift.try), align=c("l", "c", "r"), caption = "Shift Frequency and Proportion Distribution for Sample Population")
 
 #Visualize the categorical variables (probably will not be included in practicum 1)
 library(ggpubr)
+library(ggthemes)
 ggbarplot(gender.df, x = "Gender", y = "Freq", combine = TRUE)
 ggbarplot(shift.df, x = "Shift", y = "Freq", fill= "cornflowerblue", main = "Shift distribution of Sample Population" )
 
-ggplot(pracdat, aes(x = shift)) + geom_dotplot(binwidth = .1)
+
+level_order <- factor(pracdat$shift, level = c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other", "NA"))
+
+
+  
+ggplot(pracdat, aes(x = factor(shift, level = level_order))) + geom_dotplot(binwidth = .04)
+
+ggplot(pracdat, aes(x = shift)) + geom_dotplot(binwidth = .03)+ theme_classic() + ggtitle("Shift Distribution of Sample Population")+scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other", "NA"))+geom_text(stat='count', aes(label=..count..))
+
+
+#Try formatting this in a different way such that the times are in order
+ShiftTimes <- c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other", "NA")
+Counts <- c(31, 115, 56, 50, 44, 14, 8, 15, 15, 4)
+
+shift.df2 <- data.frame(ShiftTimes, Counts)
+ggplot(shift.df2, aes(x=ShiftTimes, y=Counts))+geom_point()+scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other", "NA"))
 ```
