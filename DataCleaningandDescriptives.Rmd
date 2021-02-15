@@ -23,7 +23,7 @@ sum(apply(dat1, 1, function(x){any(is.na(x))})) # every single observation has a
 
 The first obvious challenge is that this dataset does not include a single complete case with all fields filled out.  In otherwords, every single observation at least has one variable populated with "N/A".  Thus, using a function such as complete.cases would be highly problematic in this circumstance (we would have no data left). 
 
-There are also a lot of variables.  Let's focus specifically on the 13 mentioned in the Write-Up.
+There are also a lot of variables that are not necessary for the analysis of weight gain. Let's focus specifically on the 13 mentioned in the Write-Up.
 
 ```{r datacleaning}
 #Select variables of interest
