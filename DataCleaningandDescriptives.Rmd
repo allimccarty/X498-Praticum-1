@@ -21,7 +21,7 @@ dat1 <- read_excel("Practicum 1 Data.xlsx")
 sum(apply(dat1, 1, function(x){any(is.na(x))})) # every single observation has a N/A for at least one variable
 ```
 
-The first obvious challenge is that this dataset does not include a single complete case.  In otherwords, every single observation at least has one variable populated with "N/A".  Thus, using a function such as complete.cases would be highly problematic in this circumstance (we would have no data left). 
+The first obvious challenge is that this dataset does not include a single complete case with all fields filled out.  In otherwords, every single observation at least has one variable populated with "N/A".  Thus, using a function such as complete.cases would be highly problematic in this circumstance (we would have no data left). 
 
 There are also a lot of variables.  Let's focus specifically on the 13 mentioned in the Write-Up.
 
