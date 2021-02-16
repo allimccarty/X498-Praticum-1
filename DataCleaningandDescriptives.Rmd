@@ -51,6 +51,8 @@ sum(complete.cases(pracdat[5])) #348 out of 392 observations have data on lbs ga
 sum(complete.cases(pracdat[6])) #232 of the 392 observations have binary weight gain data
 sum(complete.cases(pracdat[13])) #351 of the 392 observations have metabolic minutes data
 
+pracdat$Before_Weight = (pracdat$bweight-pracdat$lbs_gained)
+pracdat$Before_BMI = round((703*pracdat$bweight)/(pracdat$height*pracdat$height),2)
 
 #For now we will just remove all of the observations that do not have complete cases for the four aforementioned variables (***ASK ABOUT THIS?***)
 #pracdat <- pracdat[complete.cases(pracdat[c(1, 5, 6, 13)]),]
