@@ -46,6 +46,10 @@ pracdat$Total_Met_Min = 8*pracdat$VigTime + 4*pracdat$ModTime + 3.3*pracdat$Walk
 #Next, we will go back and manually calculate BMI and overwite the column in the original data frame
 # ***INCLUDE JOE'S CODE HERE***
 
+pracdat$Begin_bweight = ifelse(is.na(pracdat$lbs_gained), pracdat$bweight, (pracdat$bweight)-(pracdat$lbs_gained))
+pracdat$Before_BMI = round((703*pracdat$Begin_bweight)/(pracdat$height*pracdat$height),2)
+pracdat$BMI_change = (pracdat$BMI)-(pracdat$Before_BMI)
+
 #Now, let's see what variables are missing for each of the predictors
 sum(apply(pracdat, 1, function(x){any(is.na(x))})) # Now we have 189 complete cases (61 more than before)
 
@@ -55,13 +59,57 @@ sum(complete.cases(pracdat[13])) #351 of the 352 observations have metabolic min
 sum(complete.cases(pracdat[6])) #232 of the 352 observations have data for lbs gained
 ```
 
-Commentary on lack of data for lbs gained: 
+
+### Exploratory Data Analysis:
+
+Test for normality of the continuous variables:
+
+```{r}
+#First, we want to make qqnorm plots for all of the continuous variables, which will be used to justify transformations and included in the appendix
+library(car)
+pracdat.cont <- pracdat[c(-1:-2, -5:-6)]
+cont.labels <- colnames(pracdat.cont)
+newfun <- function(x, y) qqPlot(x, main = paste(y, "QQ Plot", sep = " "))
+par(mfrow = c(1, 2))
+mapply(newfun, pracdat.cont, cont.labels)
+```
+
+We made QQPlots for all of the continuous numeric variables.  Based on the plots, we think that age, height, body weight, and BMI are approximately normal (at least normal enough that they do not merit transformations).
+
+Pounds gained, VigTime, ModTime, and WalkTime, and TotalMetMinutes do not follow a normal distribution and have a strong right skew. We will take a closer look at these variables and try a log transformation if necessary
+
+```{r}
+pracdat.abnormal <- pracdat.cont[c(3, 6:9)]
+library(reshape2)
+pracdat.abnormal<- melt(pracdat.abnormal)
+ggplot(data = pracdat.abnormal , aes(x = value)) + stat_density() + facet_wrap(~variable, scales = "free")
+#Most have an extreme right skew
+
+#Now, let's take a log transformtion of all of these variables
+ggplot(data = pracdat.abnormal , aes(x = log(value))) + stat_density() + facet_wrap(~variable, scales = "free")
+# Much better
+
+
+#Perform the transformation to overall dataframe
+pracdat$lbs_gained <- log(pracdat$lbs_gained)
+pracdat$pounds_gained <- log(pracdat$pounds_gained)
+pracdat$VigTime <- log(pracdat$VigTime)
+pracdat$WalkTime <- log(pracdat$WalkTime)
+pracdat$ModTime <- log(pracdat$ModTime)
+pracdat$Total_Met_Min <- log(pracdat$Total_Met_Min)
+```
+
+**NOTE THAT ANY DATAFRAME AFTER THIS LINE DERIVED FROM PRACDAT HAS LOG TRANSFORMATIONS IN POUNDS GAINED AND EXERCISE MINUTES ESTIMATES**
+
+### Model Analysis
+Commentary on lack of data for lbs gained and motivation for building two separate models: 
 
 There are a lot of N/A values for lbs gained because we will not have data for a specific observation unless they gained weight. If a person lost weight in the study, this would be populated as "N/A" for lbs gained (col 6). For the purposes of the second model, we may choose to select the subset of the population who gained weight (have data for this variable)/or did not gain weight (do NOT have data for this variable) and create a model specific to that subset
 
 
 For Model 1, we will just use the binary weight gain variable to create a logistic model.  For Model 2, we will subset the sample to those who gained weight, and build multiple models to determine which factors influenced this weight gain.
 
+Data Cleaning specific to our models:
 ```{r MoreDataCleaning}
 #Create final data frame for Model #1
 pracdat.mod1 <- pracdat[-6:-7]
