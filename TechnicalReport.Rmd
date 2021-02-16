@@ -42,7 +42,6 @@ pracdat <- pracdat[1:13]
 # Next, we will go back and manually calculate metabolic minutes and overwrite the column in the original data frame
 # Calculation for Total Met Minutes = 8*VigTime + 4*ModTime + 3.3*WalkTime
 pracdat$Total_Met_Min = 8*pracdat$VigTime + 4*pracdat$ModTime + 3.3*pracdat$WalkTime
-sum(apply(pracdat, 1, function(x){any(is.na(x))})) # Now we have 189 complete cases (61 more than before)
 
 #Next, we will go back and manually calculate BMI and overwite the column in the original data frame
 # ***INCLUDE JOE'S CODE HERE***
