@@ -62,6 +62,13 @@ sum(complete.cases(pracdat[6])) #232 of the 352 observations have data for lbs g
 
 ### Exploratory Data Analysis:
 
+Visuals for Categorical Variables
+
+```{r}
+
+```
+
+
 Test for normality of the continuous variables:
 
 ```{r}
@@ -120,3 +127,10 @@ pracdat.mod1$weightgain <- ifelse(pracdat.mod1$weightgain=="Yes",1,0)
 # Create subset data frames for Model #2
 pracdat.mod2 <- subset(pracdat, weightgain == "Yes")
 ```
+
+Binary WeightGain Model
+
+```{r}
+
+```
+
