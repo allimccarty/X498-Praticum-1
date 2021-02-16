@@ -46,6 +46,10 @@ pracdat$Total_Met_Min = 8*pracdat$VigTime + 4*pracdat$ModTime + 3.3*pracdat$Walk
 #Next, we will go back and manually calculate BMI and overwite the column in the original data frame
 # ***INCLUDE JOE'S CODE HERE***
 
+pracdat$Begin_bweight = ifelse(is.na(pracdat$lbs_gained), pracdat$bweight, (pracdat$bweight)-(pracdat$lbs_gained))
+pracdat$Before_BMI = round((703*pracdat$Begin_bweight)/(pracdat$height*pracdat$height),2)
+pracdat$BMI_change = (pracdat$BMI)-(pracdat$Before_BMI)
+
 #Now, let's see what variables are missing for each of the predictors
 sum(apply(pracdat, 1, function(x){any(is.na(x))})) # Now we have 189 complete cases (61 more than before)
 
