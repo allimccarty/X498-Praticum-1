@@ -20,6 +20,7 @@ library(kableExtra)
 library(gridExtra)
 library(ggpubr)
 library(ggthemes)
+library(mgcv)
 ```
 
 ```{r InitialDataCleaning}
@@ -168,5 +169,14 @@ Binary WeightGain Model **should use pracdat.mod1**
 
 Multivariate Linear Model - only GAINED
 ```{r}
-model1 = glm(lbs_gained ~ VigTime + WalkTime + ModTime, data = pracdat.mod2)
+#length(pracdat.mod2$lbs_gained)
+#length(pracdat.mod2$shift)
+multi.mod1 = glm(lbs_gained ~ shift, data = pracdat.mod2)
+
+
+cv.weight1 = mean(residuals(multi.mod1)^2/(1-hatvalues(multi.mod1))^2)
+
+data.frame(cv.weight1)
 ```
+
+
