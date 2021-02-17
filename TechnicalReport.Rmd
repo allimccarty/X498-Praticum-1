@@ -44,7 +44,6 @@ pracdat <- pracdat[1:13]
 pracdat$Total_Met_Min = 8*pracdat$VigTime + 4*pracdat$ModTime + 3.3*pracdat$WalkTime
 
 #Next, we will go back and manually calculate BMI and overwite the column in the original data frame
-# ***INCLUDE JOE'S CODE HERE***
 
 pracdat$Begin_bweight = ifelse(is.na(pracdat$lbs_gained), pracdat$bweight, (pracdat$bweight)-(pracdat$lbs_gained))
 pracdat$Before_BMI = round((703*pracdat$Begin_bweight)/(pracdat$height*pracdat$height),2)
@@ -69,7 +68,6 @@ ggplot(pracdat, aes(x=gender, y=BMI_change)) + geom_boxplot()
 ggplot(pracdat, aes(x=Age, y = BMI)) + geom_point(aes(color=gender))
 
 ggplot(na.omit(pracdat), aes(x = Age, y = Total_Met_Min, color = gender)) + geom_line(size = 1) + facet_grid(. ~ gender) + theme_bw() + theme(panel.grid = element_blank())
-
 
 ggplot(pracdat, aes(x= gender, y =BMI_change)) + geom_boxplot(aes(color = gender)) + facet_grid(. ~ shift)
 
