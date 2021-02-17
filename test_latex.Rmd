@@ -108,6 +108,9 @@ In order to test the assumption of normalcy for the variables, we made QQPlots f
 Pounds gained, VigTime, ModTime, and WalkTime, and TotalMetMinutes do not follow a normal distribution and have a strong right skew. We will take a closer look at these variables and try a log transformation if necessary.
 
 ```{r}
+library(car)
+pracdat.cont <- pracdat[c(-1:-2, -5:-6)]
+cont.labels <- colnames(pracdat.cont)
 pracdat.abnormal <- pracdat.cont[c(3, 6:9)]
 library(reshape2)
 pracdat.abnormal<- melt(pracdat.abnormal)
@@ -191,9 +194,7 @@ Test for normality of the continuous variables:
 
 ```{r}
 #First, we want to make qqnorm plots for all of the continuous variables, which will be used to justify transformations and included in the appendix
-library(car)
-pracdat.cont <- pracdat[c(-1:-2, -5:-6)]
-cont.labels <- colnames(pracdat.cont)
+
 newfun <- function(x, y) qqPlot(x, main = paste(y, "QQ Plot", sep = " "))
 par(mfrow = c(1, 2))
 mapply(newfun, pracdat.cont, cont.labels)
