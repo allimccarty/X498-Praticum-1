@@ -80,7 +80,7 @@ sum(complete.cases(pracdat[6])) #232 of the 352 observations have data for lbs g
 
 Visuals for Categorical Variables
 
-```{r}
+```{r, fig.height=4, fig.width=6}
 ggplot(pracdat, aes(x=gender, y=BMI_change)) + geom_boxplot()
 ggplot(pracdat, aes(x=Age, y = BMI)) + geom_point(aes(color=gender))
 
@@ -102,19 +102,8 @@ grid.arrange(p1, p2, p3, nrow = 2)
 
 ```
 
-Test for normality of the continuous variables:
 
-```{r}
-#First, we want to make qqnorm plots for all of the continuous variables, which will be used to justify transformations and included in the appendix
-library(car)
-pracdat.cont <- pracdat[c(-1:-2, -5:-6)]
-cont.labels <- colnames(pracdat.cont)
-newfun <- function(x, y) qqPlot(x, main = paste(y, "QQ Plot", sep = " "))
-par(mfrow = c(1, 2))
-mapply(newfun, pracdat.cont, cont.labels)
-```
-
-We made QQPlots for all of the continuous numeric variables.  Based on the plots, we think that age, height, body weight, and BMI are approximately normal (at least normal enough that they do not merit transformations).
+In order to test the assumption of normalcy for the variables, we made QQPlots for all of the continuous numeric variables (Appendix 1).  Based on the plots, we think that age, height, body weight, and BMI are approximately normal (at least normal enough that they do not merit transformations).
 
 Pounds gained, VigTime, ModTime, and WalkTime, and TotalMetMinutes do not follow a normal distribution and have a strong right skew. We will take a closer look at these variables and try a log transformation if necessary.
 
@@ -188,7 +177,6 @@ Multivariate Linear Model - only GAINED
 #length(pracdat.mod2$shift)
 multi.mod1 = glm(lbs_gained ~ shift, data = pracdat.mod2)
 
-
 cv.weight1 = mean(residuals(multi.mod1)^2/(1-hatvalues(multi.mod1))^2)
 
 data.frame(cv.weight1)
@@ -197,4 +185,16 @@ data.frame(cv.weight1)
 ## Discussion and Conclusion
 
 
-## Abstract
+## Appendix
+
+Test for normality of the continuous variables:
+
+```{r}
+#First, we want to make qqnorm plots for all of the continuous variables, which will be used to justify transformations and included in the appendix
+library(car)
+pracdat.cont <- pracdat[c(-1:-2, -5:-6)]
+cont.labels <- colnames(pracdat.cont)
+newfun <- function(x, y) qqPlot(x, main = paste(y, "QQ Plot", sep = " "))
+par(mfrow = c(1, 2))
+mapply(newfun, pracdat.cont, cont.labels)
+```
