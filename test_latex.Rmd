@@ -102,8 +102,99 @@ grid.arrange(p1, p2, p3, nrow = 2)
 
 ```
 
-## Model Process:
+Test for normality of the continuous variables:
 
+```{r}
+#First, we want to make qqnorm plots for all of the continuous variables, which will be used to justify transformations and included in the appendix
+library(car)
+pracdat.cont <- pracdat[c(-1:-2, -5:-6)]
+cont.labels <- colnames(pracdat.cont)
+newfun <- function(x, y) qqPlot(x, main = paste(y, "QQ Plot", sep = " "))
+par(mfrow = c(1, 2))
+mapply(newfun, pracdat.cont, cont.labels)
+```
+
+We made QQPlots for all of the continuous numeric variables.  Based on the plots, we think that age, height, body weight, and BMI are approximately normal (at least normal enough that they do not merit transformations).
+
+Pounds gained, VigTime, ModTime, and WalkTime, and TotalMetMinutes do not follow a normal distribution and have a strong right skew. We will take a closer look at these variables and try a log transformation if necessary.
+
+```{r}
+pracdat.abnormal <- pracdat.cont[c(3, 6:9)]
+library(reshape2)
+pracdat.abnormal<- melt(pracdat.abnormal)
+ggplot(data = pracdat.abnormal , aes(x = value)) + stat_density() + facet_wrap(~variable, scales = "free")
+#Most have an extreme right skew
+
+#Now, let's take a log transformation of all of these variables
+ggplot(data = pracdat.abnormal , aes(x = log(value))) + stat_density() + facet_wrap(~variable, scales = "free")
+# Much better
+
+
+#Perform the transformation to overall dataframe
+pracdat$lbs_gained <- log(pracdat$lbs_gained)
+pracdat$pounds_gained <- log(pracdat$pounds_gained)
+pracdat$VigTime <- log(pracdat$VigTime)
+pracdat$WalkTime <- log(pracdat$WalkTime)
+pracdat$ModTime <- log(pracdat$ModTime)
+pracdat$Total_Met_Min <- log(pracdat$Total_Met_Min)
+```
+
+
+
+## Model Process:
+Commentary on lack of data for lbs gained and motivation for building two separate models: 
+
+There are a lot of N/A values for lbs gained because we will not have data for a specific observation unless they gained weight. If a person lost weight in the study, this would be populated as "N/A" for lbs gained (col 6). For the purposes of the second model, we may choose to select the subset of the population who gained weight (have data for this variable)/or did not gain weight (do NOT have data for this variable) and create a model specific to that subset.
+
+
+For Model 1, we will just use the binary weight gain variable to create a logistic model.  For Model 2, we will subset the sample to those who gained weight, and build multiple models to determine which factors influenced this weight gain.
+
+Data Cleaning specific to our models:
+```{r MoreDataCleaning}
+#Create final data frame for Model #1
+pracdat.mod1 <- pracdat[-6:-7]
+#Change Weight Gain Factor Variable to Binary
+pracdat.mod1$weightgain <- ifelse(pracdat.mod1$weightgain=="Yes",1,0)
+
+
+# Create subset data frames for Model #2
+pracdat.mod2 <- subset(pracdat, weightgain == "Yes")
+```
+
+Binary WeightGain Model **should use pracdat.mod1**
+
+```{r}
+#weightglm1 = glm(weightgain ~ VigTime + WalkTime + ModTime, data = pracdat, family = "binomial)
+#weightglm2 = glm(weightgain ~  , family = "binomial)
+#weightglm3 = glm(weightgain ~  , family = "binomial)
+#weightglm4 = glm(weightgain ~  , family = "binomial)
+
+#cv.weight1 = mean(residuals(weightglm1)^2/(1-hatvalues(weightglm1))^2)
+#cv.weight1 = mean(residuals(weightglm1)^2/(1-hatvalues(weightglm1))^2)
+#cv.weight1 = mean(residuals(weightglm1)^2/(1-hatvalues(weightglm1))^2)
+#cv.weight1 = mean(residuals(weightglm1)^2/(1-hatvalues(weightglm1))^2)
+
+#data.frame(cv.weightg1,cv.weightg2,cv.weightg3,cv.weightg4)
+
+#favorite.table <- summary(final_model)$coefficients
+#kable(favorite.table, digits=5)
+```
+
+**If our specific aims are testing whether shift and total metabolic minutes have an effect on weight gain, shouldn't the be in all the models**
+
+Multivariate Linear Model - only GAINED
+```{r}
+#length(pracdat.mod2$lbs_gained)
+#length(pracdat.mod2$shift)
+multi.mod1 = glm(lbs_gained ~ shift, data = pracdat.mod2)
+
+
+cv.weight1 = mean(residuals(multi.mod1)^2/(1-hatvalues(multi.mod1))^2)
+
+data.frame(cv.weight1)
+```
 
 ## Discussion and Conclusion
 
+
+## Abstract
