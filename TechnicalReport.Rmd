@@ -117,22 +117,12 @@ ggplot(data = pracdat.abnormal , aes(x = log(value))) + stat_density() + facet_w
 
 
 #Perform the transformation to overall dataframe
-pracdat$lbs_gained <- log(pracdat$lbs_gained)
-pracdat$pounds_gained <- log(pracdat$pounds_gained)
-pracdat$VigTime <- log(pracdat$VigTime)
-pracdat$WalkTime <- log(pracdat$WalkTime)
-pracdat$ModTime <- log(pracdat$ModTime)
-pracdat$Total_Met_Min <- log(pracdat$Total_Met_Min)
-
-
-pracdat.transformed = pracdat
-pracdat.transformed$lbs_gained <- log(pracdat.transformed$lbs_gained+1)
-pracdat.transformed$pounds_gained <- log(pracdat.transformed$pounds_gained+1)
-pracdat.transformed$VigTime <- log(pracdat.transformed$VigTime+1)
-pracdat.transformed$WalkTime <- log(pracdat.transformed$WalkTime+1)
-pracdat.transformed$ModTime <- log(pracdat.transformed$ModTime+1)
-pracdat.transformed$Total_Met_Min <- log(pracdat.transformed$Total_Met_Min+1)
-
+pracdat$lbs_gained <- log(pracdat$lbs_gained+1)
+pracdat$pounds_gained <- log(pracdat$pounds_gained+1)
+pracdat$VigTime <- log(pracdat$VigTime+1)
+pracdat$WalkTime <- log(pracdat$WalkTime+1)
+pracdat$ModTime <- log(pracdat$ModTime+1)
+pracdat$Total_Met_Min <- log(pracdat$Total_Met_Min+1)
 ```
 
 **NOTE THAT ANY DATAFRAME AFTER THIS LINE DERIVED FROM PRACDAT HAS LOG TRANSFORMATIONS IN POUNDS GAINED AND EXERCISE MINUTES ESTIMATES**
