@@ -23,7 +23,7 @@ library(ggthemes)
 library(mgcv)
 ```
 
-```{r InitialDataCleaning}
+```{r InitialDataCleaning, include=FALSE}
 #Import Data
 dat1 <- read_excel("Practicum 1 Data.xlsx")
 
