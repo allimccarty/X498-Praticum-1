@@ -68,10 +68,17 @@ Visuals for Categorical Variables
 ggplot(pracdat, aes(x=gender, y=BMI_change)) + geom_boxplot()
 ggplot(pracdat, aes(x=Age, y = BMI)) + geom_point(aes(color=gender))
 
-ggplot(na.omit(pracdat), aes(x = Age, y = Total_Met_Min, color = gender)) + geom_line(size = 1) + facet_grid(. ~ gender) + theme_bw() + theme(panel.grid = element_blank())
+#solid
+ggplot(na.omit(pracdat), aes(x = Age, y = Total_Met_Min, color = gender)) + geom_line(size = .8) + facet_grid(. ~ gender) + theme_bw() + theme(panel.grid = element_blank())
 
+#solid
+ggplot(na.omit(pracdat), aes(x= gender, y =BMI_change)) + geom_boxplot(aes(color = gender)) + facet_grid(. ~ shift)
 
-ggplot(pracdat, aes(x= gender, y =BMI_change)) + geom_boxplot(aes(color = gender)) + facet_grid(. ~ shift)
+#decent
+p1 <- ggplot(na.omit(pracdat), aes(x = shift, y = VigTime, fill=gender)) + geom_bar(stat="identity") + theme_minimal()
+p2 <- ggplot(na.omit(pracdat), aes(x = shift, y = WalkTime, fill=gender)) + geom_bar(stat="identity") + theme_minimal()
+p3 <- ggplot(na.omit(pracdat), aes(x = shift, y = ModTime, fill=gender)) + geom_bar(stat="identity") + theme_minimal()
+grid.arrange(p1, p2, p3, nrow = 2)
 
 ```
 
@@ -138,6 +145,19 @@ pracdat.mod2 <- subset(pracdat, weightgain == "Yes")
 Binary WeightGain Model
 
 ```{r}
+#weightglm1 = glm(weightgain ~ VigTime + WalkTime + ModTime, data = pracdat, family = "binomial)
+#weightglm2 = glm(weightgain ~  , family = "binomial)
+#weightglm3 = glm(weightgain ~  , family = "binomial)
+#weightglm4 = glm(weightgain ~  , family = "binomial)
 
+#cv.weight1 = mean(residuals(weightglm1)^2/(1-hatvalues(weightglm1))^2)
+#cv.weight1 = mean(residuals(weightglm1)^2/(1-hatvalues(weightglm1))^2)
+#cv.weight1 = mean(residuals(weightglm1)^2/(1-hatvalues(weightglm1))^2)
+#cv.weight1 = mean(residuals(weightglm1)^2/(1-hatvalues(weightglm1))^2)
+
+#data.frame(cv.weightg1,cv.weightg2,cv.weightg3,cv.weightg4)
+
+#favorite.table <- summary(final_model)$coefficients
+#kable(favorite.table, digits=5)
 ```
 
