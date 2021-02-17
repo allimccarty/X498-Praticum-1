@@ -78,10 +78,11 @@ ggplot(pracdat, aes(x= gender, y =BMI_change)) + geom_boxplot(aes(color = gender
 ggplot(na.omit(pracdat), aes(x= gender, y =BMI_change)) + geom_boxplot(aes(color = gender)) + facet_grid(. ~ shift)
 
 #decent
-p1 <- ggplot(na.omit(pracdat), aes(x = shift, y = VigTime, fill=gender)) + geom_bar(stat="identity") + theme_minimal()
-p2 <- ggplot(na.omit(pracdat), aes(x = shift, y = WalkTime, fill=gender)) + geom_bar(stat="identity") + theme_minimal()
-p3 <- ggplot(na.omit(pracdat), aes(x = shift, y = ModTime, fill=gender)) + geom_bar(stat="identity") + theme_minimal()
-grid.arrange(p1, p2, p3, nrow = 2)
+p1 <- ggplot(na.omit(pracdat), aes(x = shift, y = VigTime, fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))
+p2 <- ggplot(na.omit(pracdat), aes(x = shift, y = WalkTime, fill=gender)) + geom_bar(stat="identity") + theme_minimal() +theme(axis.text.x = element_text(angle=90, hjust=1))
+p3 <- ggplot(na.omit(pracdat), aes(x = shift, y = ModTime, fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))
+p4 <- ggplot(na.omit(pracdat), aes(x = shift, y = Total_Met_Min, fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))
+grid.arrange(p1, p2, p3, p4, nrow = 2)
 
 
 ```
