@@ -1,7 +1,109 @@
 ---
-title: "test_latex"
-author: "jmajoros"
+title: "Technical Report"
+author: "Jordan Majoros, Alli McCarty, Joe Spatz"
 date: "2/15/2021"
 output: pdf_document
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#Install Libraries
+library(readxl)
+library(tidyverse)
+library(dplyr)
+library(pastecs)
+library(data.table)
+library(formattable)
+library(tidyr)
+library(kableExtra)
+library(gridExtra)
+library(ggpubr)
+library(ggthemes)
+library(mgcv)
+```
+
+
+## Abstract:
+
+This part will include **BRIEF**  information from the initial introduction in the SAP as well as details on EDA and/or models included
+
+## Introduction:
+
+Can pull information from SAP intro -- address specific aims and commentary on what types of models we aim to build, contingent on EDA
+
+## Data:
+
+Three additional variables were calculated using the given data and added to the dataset to give more depth to BMI. The participants of the call center study provided their height, number of pounds gained during the eight month period, and body weight at the end as well. With those values, the ending BMI was calculated. To make the ending BMI more valuable we used the provided data to calculate the BMI for each participant before starting the 8 month study. First, the beginning body weight was found using the pounds gained and the weight of the participant at the end. Then the starting BMI was calculated using the formula below with weight measured in pounds and the height the participant presented in inches.
+
+				BMI = 703 * weight (lbs) / [height (inches)]^2
+				
+Change in BMI was then calculated subtracting the starting BMI from the ending BMI. Many participants did not gain weight so their change in BMI was zero. Percentage BMI change over the 8 month period could have also been calculated by dividing the BMI difference and beginning BMI but that was not included as an additional variable. Analyzing the change in BMI can have advantages over strictly pounds gain if a participant increased their height or started at a below average weight given they are taller than average.  
+
+```{r InitialDataCleaning, include=FALSE}
+#Import Data
+dat1 <- read_excel("Practicum 1 Data.xlsx")
+
+#From the SAP, we decided that we would include 13 variables in the analysis for this project
+#Select variables of interest
+myvars <- c("shift", "gender", "Age", "height", "weightgain", "lbs_gained", "pounds_gained", "bweight", "BMI", "VigTime", "WalkTime", "ModTime", "Total_Met_Min")
+pracdat <- dat1[myvars]
+
+#Get rid of observations that do not have ANY variables populated
+all.na <- (apply(pracdat, 1, function(x){all(is.na(x))}))
+pracdat <- data.frame(pracdat, all.na)
+pracdat <- subset(pracdat, all.na == "FALSE")
+
+#Get rid of the last column that we used to subset complete cases
+pracdat <- pracdat[1:13]
+
+# Next, we will go back and manually calculate metabolic minutes and overwrite the column in the original data frame
+# Calculation for Total Met Minutes = 8*VigTime + 4*ModTime + 3.3*WalkTime
+pracdat$Total_Met_Min = 8*pracdat$VigTime + 4*pracdat$ModTime + 3.3*pracdat$WalkTime
+
+#Next, we will go back and manually calculate BMI and overwite the column in the original data frame
+
+pracdat$Begin_bweight = ifelse(is.na(pracdat$lbs_gained), pracdat$bweight, (pracdat$bweight)-(pracdat$lbs_gained))
+pracdat$Before_BMI = round((703*pracdat$Begin_bweight)/(pracdat$height*pracdat$height),2)
+pracdat$BMI_change = (pracdat$BMI)-(pracdat$Before_BMI)
+
+#Now, let's see what variables are missing for each of the predictors
+sum(apply(pracdat, 1, function(x){any(is.na(x))})) # Now we have 189 complete cases (61 more than before)
+
+sum(complete.cases(pracdat[1])) #348 out of 352 observations have data on shift
+sum(complete.cases(pracdat[5])) #348 out of 352 observations have data on binary weight gain
+sum(complete.cases(pracdat[13])) #351 of the 352 observations have metabolic minutes data (meaning they also have data on walk, vig, and mod ex time)
+sum(complete.cases(pracdat[6])) #232 of the 352 observations have data for lbs gained
+```
+
+## Exploratory Data Analysis:
+
+Visuals for Categorical Variables
+
+```{r}
+ggplot(pracdat, aes(x=gender, y=BMI_change)) + geom_boxplot()
+ggplot(pracdat, aes(x=Age, y = BMI)) + geom_point(aes(color=gender))
+
+#solid
+ggplot(na.omit(pracdat), aes(x = Age, y = Total_Met_Min, color = gender)) + geom_line(size = .8) + facet_grid(. ~ gender) + theme_bw() + theme(panel.grid = element_blank())
+
+
+ggplot(pracdat, aes(x= gender, y =BMI_change)) + geom_boxplot(aes(color = gender)) + facet_grid(. ~ shift)
+
+#solid
+ggplot(na.omit(pracdat), aes(x= gender, y =BMI_change)) + geom_boxplot(aes(color = gender)) + facet_grid(. ~ shift)
+
+#decent
+p1 <- ggplot(na.omit(pracdat), aes(x = shift, y = VigTime, fill=gender)) + geom_bar(stat="identity") + theme_minimal()
+p2 <- ggplot(na.omit(pracdat), aes(x = shift, y = WalkTime, fill=gender)) + geom_bar(stat="identity") + theme_minimal()
+p3 <- ggplot(na.omit(pracdat), aes(x = shift, y = ModTime, fill=gender)) + geom_bar(stat="identity") + theme_minimal()
+grid.arrange(p1, p2, p3, nrow = 2)
+
+
+```
+
+## Model Process:
+
+
+## Discussion and Conclusion
 
