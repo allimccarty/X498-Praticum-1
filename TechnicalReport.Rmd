@@ -65,6 +65,13 @@ sum(complete.cases(pracdat[6])) #232 of the 352 observations have data for lbs g
 Visuals for Categorical Variables
 
 ```{r}
+ggplot(pracdat, aes(x=gender, y=BMI_change)) + geom_boxplot()
+ggplot(pracdat, aes(x=Age, y = BMI)) + geom_point(aes(color=gender))
+
+ggplot(na.omit(pracdat), aes(x = Age, y = Total_Met_Min, color = gender)) + geom_line(size = 1) + facet_grid(. ~ gender) + theme_bw() + theme(panel.grid = element_blank())
+
+
+ggplot(pracdat, aes(x= gender, y =BMI_change)) + geom_boxplot(aes(color = gender)) + facet_grid(. ~ shift)
 
 ```
 
