@@ -97,7 +97,7 @@ library(car)
 pracdat.cont <- pracdat[c(-1:-2, -5:-6)]
 cont.labels <- colnames(pracdat.cont)
 newfun <- function(x, y) qqPlot(x, main = paste(y, "QQ Plot", sep = " "))
-par(mfrow = c(1, 2))
+par(mfrow = c(2, 3))
 mapply(newfun, pracdat.cont, cont.labels)
 ```
 
