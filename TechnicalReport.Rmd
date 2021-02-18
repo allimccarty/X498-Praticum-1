@@ -172,17 +172,17 @@ pracdat.mod2 <- subset(pracdat, weightgain == "Yes")
 Binary WeightGain Model **should use pracdat.mod1**
 
 ```{r}
-#weightglm1 = glm(weightgain ~ VigTime + WalkTime + ModTime + gender + Age, data = pracdat.mod1, family = "binomial")
+weightglm1 = glm(weightgain ~ VigTime + WalkTime + ModTime + gender + Age, data = pracdat.mod1, family = "binomial")
 weightglm2 = glm(weightgain ~ Total_Met_Min + gender + Age, data = pracdat.mod1, family = "binomial")
-#weightglm3 = glm(weightgain ~ shift + gender + Age, data = pracdat.mod1, family = "binomial")
-#weightglm4 = glm(weightgain ~ VigTime + gender + Age, data = pracdat.mod1, family = "binomial")
+weightglm3 = glm(weightgain ~ shift + gender + Age, data = pracdat.mod1, family = "binomial")
+weightglm4 = glm(weightgain ~ VigTime + gender + Age, data = pracdat.mod1, family = "binomial")
 
-#cv.weight1 = mean(residuals(weightglm1)^2/(1-hatvalues(weightglm1))^2)
+cv.weight1 = mean(residuals(weightglm1)^2/(1-hatvalues(weightglm1))^2)
 cv.weight2 = mean(residuals(weightglm2)^2/(1-hatvalues(weightglm2))^2)
-#cv.weight3 = mean(residuals(weightglm3)^2/(1-hatvalues(weightglm3))^2)
-#cv.weight4 = mean(residuals(weightglm4)^2/(1-hatvalues(weightglm4))^2)
+cv.weight3 = mean(residuals(weightglm3)^2/(1-hatvalues(weightglm3))^2)
+cv.weight4 = mean(residuals(weightglm4)^2/(1-hatvalues(weightglm4))^2)
 
-#data.frame(cv.weight1,cv.weight2,cv.weight3,cv.weight4)
+data.frame(cv.weight1,cv.weight2,cv.weight3,cv.weight4)
 
 favorite.table <- summary(weightglm2)$coefficients
 kable(favorite.table, digits=5)
