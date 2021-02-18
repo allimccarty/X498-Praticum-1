@@ -196,11 +196,20 @@ Multivariate Linear Model - only GAINED
 #length(pracdat.mod2$lbs_gained)
 #length(pracdat.mod2$shift)
 multi.mod1 = glm(lbs_gained ~ shift + Total_Met_Min, data = pracdat.mod2)
+multi.mod2 = glm(lbs_gained ~ shift + Total_Met_Min + Age, data = pracdat.mod2)
+multi.mod3 = glm(lbs_gained ~ shift + Total_Met_Min + Age  + gender, data = pracdat.mod2)
+
+
 summary(multi.mod1)
 
 cv.weight1 = mean(residuals(multi.mod1)^2/(1-hatvalues(multi.mod1))^2)
+cv.weight3 = mean(residuals(multi.mod2)^2/(1-hatvalues(multi.mod2))^2)
+cv.weight4 = mean(residuals(multi.mod3)^2/(1-hatvalues(multi.mod3))^2)
 
-data.frame(cv.weight1)
+
+data.frame(c(cv.weight1, cv.weight3, cv.weight4))
+newtable <- summary(multi.mod1)$coefficients
+kable(newtable, digits=5)
 ```
 
 Based on preliminary data analysis, we found shift is not a significant predictor. We found that 7-8 am are significant, which is an interesting perspective on morning versus afternoon shifts. 
