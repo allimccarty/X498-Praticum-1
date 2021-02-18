@@ -138,6 +138,23 @@ For Model 1, we will just use the binary weight gain variable to create a logist
 
 Data Cleaning specific to our models:
 ```{r MoreDataCleaning}
+#Create New Grouping Model Based on Shift Time
+shift2 <- pracdat$shift
+#Apologies, there was probably a more elegant way to do this
+shift.recode<- character(length(shift2))
+shift.recode[shift2 == "7am"] <- "morning"
+shift.recode[shift2 == "8am"] <- "morning"
+shift.recode[shift2 == "9am"] <- "morning"
+shift.recode[shift2 == "10am"]<- "morning"
+shift.recode[shift2 == "11am"]<- "afternoon"
+shift.recode[shift2 == "12pm"]<- "afternoon"
+shift.recode[shift2 == "1pm"] <- "afternoon"
+shift.recode[shift2 == "2pm"] <- "afternoon"
+shift.recode[shift2 == "3pm"] <- "other"
+shift.recode[shift2 == "other"] <- "other"
+shift.recode[is.na(shift2)] <- NA
+pracdat$shift.recode <- shift.recode
+
 #Create final data frame for Model #1
 pracdat.mod1 <- pracdat[-6:-7]
 #Change Weight Gain Factor Variable to Binary
