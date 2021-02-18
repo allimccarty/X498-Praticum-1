@@ -5,8 +5,8 @@ date: "2/15/2021"
 output: pdf_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include=FALSE, echo = FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
 #Install Libraries
 library(readxl)
@@ -26,11 +26,11 @@ library(mgcv)
 
 ## Abstract:
 
-This part will include **BRIEF**  information from the initial introduction in the SAP as well as details on EDA and/or models included
+The purpose of this analysis is to use modern statistical applications to determine what variables, with a particular emphasis on minutes of metabolic exercise and time of work shift, influence weight gain in Americans.  The data comes from a self-report questionnaire administered by a call center over an eight month period.  The data was processed and exploratory data analysis was performed to gain insight into basic trends and collinearity between variables.  Several transformations were performed on variables with skewed distributions, and the most important variables were selected via nonparametric analysis to be included in our models.  Two models were constructed; a logistic regression model to obtain binary predictions on weight gain, and a generalized additive model using various predictors to estimate weight gain in pounds. The model fits were cross validated via ***WHAT??* and residual analysis was performed.
 
 ## Introduction:
 
-Can pull information from SAP intro -- address specific aims and commentary on what types of models we aim to build, contingent on EDA
+Diseases such as obesity, diabetes, coronary heart disease, and musculoskeletal disorders have rapidly increased in the United States in the last decade, which can be partially attributed to the change in office culture to be heavily computer-based and therefore more sedentary. The purpose of our analysis is to answer what is affecting the weight change of employees in a call center.  Lifestyle habits of employees affect rates of obesity and obesity-related diseases in the United States. Descriptive statistics and graphs are used to visualize relationships between different categorical and continuous variables. We will confirm normality for these variables and use log transformation for right skewed distributions. Work shift and total metabolic minutes are two variables at the center of our analysis. We will show their effect on weight gain through exploratory data analysis. Two models have been built to show the statistical significance of certain predictors. The first model uses logistic regression with weight gain (yes/no) being the categorical response variable. Our second model is a multivariate linear model that focuses on the significance of shift start time and total metabolic minutes. The following report records our central ideas and provides evidence for the procedures taken. 
 
 ## Data:
 
@@ -61,7 +61,7 @@ pracdat <- pracdat[1:13]
 # Calculation for Total Met Minutes = 8*VigTime + 4*ModTime + 3.3*WalkTime
 pracdat$Total_Met_Min = 8*pracdat$VigTime + 4*pracdat$ModTime + 3.3*pracdat$WalkTime
 
-#Next, we will go back and manually calculate BMI and overwite the column in the original data frame
+#Next, we will go back and manually calculate BMI and overwrite the column in the original data frame
 
 pracdat$Begin_bweight = ifelse(is.na(pracdat$lbs_gained), pracdat$bweight, (pracdat$bweight)-(pracdat$lbs_gained))
 pracdat$Before_BMI = round((703*pracdat$Begin_bweight)/(pracdat$height*pracdat$height),2)
@@ -78,33 +78,35 @@ sum(complete.cases(pracdat[6])) #232 of the 352 observations have data for lbs g
 
 ## Exploratory Data Analysis:
 
-###Visuals for Categorical Variables
+### Visuals for Categorical Variables
 
 Our first graph shows the distribution of total metabolic minutes by increasing age for both genders of employees in the call center study. Female employees see most of their peak total metabolic minutes from the age group 20 to 30. After around age 32 it begins to average out and see a smaller range of values. From age 45 onward the total metabolic minutes stays under 2400 minutes. The male employees have their total metabolic minutes peak just under 7500 minutes. The rest of the male call center employees had total metabolic minutes under about 3500 minutes. Male and female employees do not show similar total metabolic minutes distributions for ages 20 to 60.   
 
 The change in BMI over the 8 month study period for the different shift start times is displayed in a boxplot with male and female separated. We see smaller spread of BMI change values for work shifts starting between 11am and 2pm with only one female observation at the 2pm shift being a large outlier. The 8am start time shift is the only time that has a more spread distribution of BMI change for male over female employees. There are less male employees so the mean BMI change for each shift can be pulled higher more easily by the outlier observations. Overall we see larger BMI changes from the morning shifts of both genders. 
 
-```{r, fig.height=4, fig.width=6}
-#Gender Total Metabolic by Age
-ggplot(na.omit(pracdat), aes(x = Age, y = Total_Met_Min, color = gender)) + geom_line(size = .8) + facet_grid(. ~ gender) + theme_bw() + theme(panel.grid = element_blank()) + ggtitle("Total Metabolic Minutes by Age for Each Gender")
+```{r, fig.height=4, fig.width=6, echo = FALSE}
+#solid
+ggplot(na.omit(pracdat), aes(x = Age, y = Total_Met_Min, color = gender)) + geom_line(size = .8) + facet_grid(. ~ gender) + theme_bw() + theme(panel.grid = element_blank())
 
-#Change in BMI for Each Time Shift
-ggplot(na.omit(pracdat), aes(x= gender, y =BMI_change)) + geom_boxplot(aes(color = gender)) + facet_grid(. ~ shift) + theme(axis.text.x = element_text(angle=90, hjust=1)) + ggtitle("Change in BMI for Each Time Shift")
 
-#NEED TO FIX WITH AVERAGES OF GENDER
-p1 <- ggplot(na.omit(pracdat), aes(x = shift, y = VigTime, fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))
-p2 <- ggplot(na.omit(pracdat), aes(x = shift, y = WalkTime, fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))
-p3 <- ggplot(na.omit(pracdat), aes(x = shift, y = ModTime, fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))
-p4 <- ggplot(na.omit(pracdat), aes(x = shift, y = Total_Met_Min, fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))
+ggplot(pracdat, aes(x= gender, y =BMI_change)) + geom_boxplot(aes(color = gender)) + facet_grid(. ~ shift)
+
+#solid
+ggplot(na.omit(pracdat), aes(x= gender, y =BMI_change)) + geom_boxplot(aes(color = gender)) + facet_grid(. ~ shift)
+
+#decent
+p1 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(VigTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1)) + xlab("Shift Time") + ylab("Average Vig Time") 
+p2 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(WalkTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() +theme(axis.text.x = element_text(angle=90, hjust=1))+ xlab("Shift Time") + ylab("Average Walk Time")
+p3 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(ModTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))+ xlab("Shift Time") + ylab("Average Mod Time")
+p4 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(Total_Met_Min), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))+ xlab("Shift Time") + ylab("Average Total Metabolic Minutes")
 grid.arrange(p1, p2, p3, p4, nrow = 2)
 ```
-
 
 In order to test the assumption of normalcy for the variables, we made QQPlots for all of the continuous numeric variables (Appendix 1).  Based on the plots, we think that age, height, body weight, and BMI are approximately normal (at least normal enough that they do not merit transformations).
 
 Pounds gained, VigTime, ModTime, and WalkTime, and TotalMetMinutes do not follow a normal distribution and have a strong right skew. We will take a closer look at these variables and try a log transformation if necessary.
 
-```{r}
+```{r, echo = FALSE}
 library(car)
 pracdat.cont <- pracdat[c(-1:-2, -5:-6)]
 cont.labels <- colnames(pracdat.cont)
@@ -120,15 +122,21 @@ ggplot(data = pracdat.abnormal , aes(x = log(value))) + stat_density() + facet_w
 
 
 #Perform the transformation to overall dataframe
-pracdat$lbs_gained <- log(pracdat$lbs_gained)
-pracdat$pounds_gained <- log(pracdat$pounds_gained)
-pracdat$VigTime <- log(pracdat$VigTime)
-pracdat$WalkTime <- log(pracdat$WalkTime)
-pracdat$ModTime <- log(pracdat$ModTime)
-pracdat$Total_Met_Min <- log(pracdat$Total_Met_Min)
+pracdat$lbs_gained <- log(pracdat$lbs_gained+1)
+pracdat$pounds_gained <- log(pracdat$pounds_gained+1)
+pracdat$VigTime <- log(pracdat$VigTime+1)
+pracdat$WalkTime <- log(pracdat$WalkTime+1)
+pracdat$ModTime <- log(pracdat$ModTime+1)
+pracdat$Total_Met_Min <- log(pracdat$Total_Met_Min+1)
 ```
 
+Now, let's test for collinearity between variables:
 
+```{r, echo = FALSE}
+pairs(pracdat[c(3, 7:13)])
+```
+
+The first obvious thing to note is that BMI and body weight are positively correlated.  This should be expected, because we caluclated BMI via a linear combination including body weight.
 
 ## Model Process:
 Commentary on lack of data for lbs gained and motivation for building two separate models: 
@@ -140,6 +148,23 @@ For Model 1, we will just use the binary weight gain variable to create a logist
 
 Data Cleaning specific to our models:
 ```{r MoreDataCleaning}
+#Create New Grouping Model Based on Shift Time
+shift2 <- pracdat$shift
+#Apologies, there was probably a more elegant way to do this
+shift.recode<- character(length(shift2))
+shift.recode[shift2 == "7am"] <- "morning"
+shift.recode[shift2 == "8am"] <- "morning"
+shift.recode[shift2 == "9am"] <- "morning"
+shift.recode[shift2 == "10am"]<- "morning"
+shift.recode[shift2 == "11am"]<- "afternoon"
+shift.recode[shift2 == "12pm"]<- "afternoon"
+shift.recode[shift2 == "1pm"] <- "afternoon"
+shift.recode[shift2 == "2pm"] <- "afternoon"
+shift.recode[shift2 == "3pm"] <- "other"
+shift.recode[shift2 == "other"] <- "other"
+shift.recode[is.na(shift2)] <- NA
+pracdat$shift.recode <- shift.recode
+
 #Create final data frame for Model #1
 pracdat.mod1 <- pracdat[-6:-7]
 #Change Weight Gain Factor Variable to Binary
@@ -150,23 +175,26 @@ pracdat.mod1$weightgain <- ifelse(pracdat.mod1$weightgain=="Yes",1,0)
 pracdat.mod2 <- subset(pracdat, weightgain == "Yes")
 ```
 
+
 Binary WeightGain Model **should use pracdat.mod1**
 
 ```{r}
-#weightglm1 = glm(weightgain ~ VigTime + WalkTime + ModTime, data = pracdat, family = "binomial)
-#weightglm2 = glm(weightgain ~  , family = "binomial)
-#weightglm3 = glm(weightgain ~  , family = "binomial)
-#weightglm4 = glm(weightgain ~  , family = "binomial)
+#weightglm1 = glm(weightgain ~ VigTime + WalkTime + ModTime + gender + Age, data = pracdat.mod1, family = "binomial")
+weightglm2 = glm(weightgain ~ Total_Met_Min + gender + Age, data = pracdat.mod1, family = "binomial")
+weightglm3 = glm(weightgain ~ shift + gender + Age, data = pracdat.mod1, family = "binomial")
+weightglm4 = glm(weightgain ~ VigTime + gender + Age, data = pracdat.mod1, family = "binomial")
 
 #cv.weight1 = mean(residuals(weightglm1)^2/(1-hatvalues(weightglm1))^2)
-#cv.weight1 = mean(residuals(weightglm1)^2/(1-hatvalues(weightglm1))^2)
-#cv.weight1 = mean(residuals(weightglm1)^2/(1-hatvalues(weightglm1))^2)
-#cv.weight1 = mean(residuals(weightglm1)^2/(1-hatvalues(weightglm1))^2)
+cv.weight2 = mean(residuals(weightglm2)^2/(1-hatvalues(weightglm2))^2)
+#cv.weight3 = mean(residuals(weightglm3)^2/(1-hatvalues(weightglm3))^2)
+#cv.weight4 = mean(residuals(weightglm4)^2/(1-hatvalues(weightglm4))^2)
 
-#data.frame(cv.weightg1,cv.weightg2,cv.weightg3,cv.weightg4)
+#data.frame(cv.weight1,cv.weight2,cv.weight3,cv.weight4)
 
-#favorite.table <- summary(final_model)$coefficients
-#kable(favorite.table, digits=5)
+favorite.table <- summary(weightglm2)$coefficients
+kable(favorite.table, digits=5)
+par(mfrow = c(2, 2))
+plot(weightglm2)
 ```
 
 **If our specific aims are testing whether shift and total metabolic minutes have an effect on weight gain, shouldn't the be in all the models**
@@ -175,24 +203,40 @@ Multivariate Linear Model - only GAINED
 ```{r}
 #length(pracdat.mod2$lbs_gained)
 #length(pracdat.mod2$shift)
-multi.mod1 = glm(lbs_gained ~ shift, data = pracdat.mod2)
+multi.mod1 = glm(lbs_gained ~ shift + Total_Met_Min, data = pracdat.mod2)
+multi.mod2 = glm(lbs_gained ~ shift + Total_Met_Min + Age, data = pracdat.mod2)
+multi.mod3 = glm(lbs_gained ~ shift + Total_Met_Min + Age  + gender, data = pracdat.mod2)
+
+
+#summary(multi.mod1)
 
 cv.weight1 = mean(residuals(multi.mod1)^2/(1-hatvalues(multi.mod1))^2)
+cv.weight3 = mean(residuals(multi.mod2)^2/(1-hatvalues(multi.mod2))^2)
+cv.weight4 = mean(residuals(multi.mod3)^2/(1-hatvalues(multi.mod3))^2)
 
-data.frame(cv.weight1)
+
+data.frame(c(cv.weight1, cv.weight3, cv.weight4))
+newtable <- summary(multi.mod3)$coefficients
+kable(newtable, digits=5)
+
+par(mfrow = c(2, 2))
+plot(multi.mod3)
 ```
+
+Based on preliminary data analysis, we found shift is not a significant predictor. We found that 7-8 am are significant, which is an interesting perspective on morning versus afternoon shifts. 
 
 ## Discussion and Conclusion
 
 
-## Appendix
+
+## Appendix 
 
 Test for normality of the continuous variables:
 
 ```{r}
 #First, we want to make qqnorm plots for all of the continuous variables, which will be used to justify transformations and included in the appendix
-
 newfun <- function(x, y) qqPlot(x, main = paste(y, "QQ Plot", sep = " "))
-par(mfrow = c(1, 2))
+par(mfrow = c(2, 3))
 mapply(newfun, pracdat.cont, cont.labels)
+mtext("Appendix 1", side=1, outer=TRUE, adj=0)
 ```
