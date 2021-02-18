@@ -188,6 +188,7 @@ cv.weight2 = mean(residuals(weightglm2)^2/(1-hatvalues(weightglm2))^2)
 
 favorite.table <- summary(weightglm2)$coefficients
 kable(favorite.table, digits=5)
+plot(weightglm2)
 ```
 
 **If our specific aims are testing whether shift and total metabolic minutes have an effect on weight gain, shouldn't the be in all the models**
