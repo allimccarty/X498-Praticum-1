@@ -81,24 +81,18 @@ sum(complete.cases(pracdat[6])) #232 of the 352 observations have data for lbs g
 Visuals for Categorical Variables
 
 ```{r, fig.height=4, fig.width=6}
-ggplot(pracdat, aes(x=gender, y=BMI_change)) + geom_boxplot()
-ggplot(pracdat, aes(x=Age, y = BMI)) + geom_point(aes(color=gender))
+#Gender Total Metabolic by Age
+ggplot(na.omit(pracdat), aes(x = Age, y = Total_Met_Min, color = gender)) + geom_line(size = .8) + facet_grid(. ~ gender) + theme_bw() + theme(panel.grid = element_blank()) + ggtitle("Total Metabolic Minutes by Age and Gender")
 
-#solid
-ggplot(na.omit(pracdat), aes(x = Age, y = Total_Met_Min, color = gender)) + geom_line(size = .8) + facet_grid(. ~ gender) + theme_bw() + theme(panel.grid = element_blank())
+#Change in BMI for Each Time Shift
+ggplot(na.omit(pracdat), aes(x= gender, y =BMI_change)) + geom_boxplot(aes(color = gender)) + facet_grid(. ~ shift) + theme(axis.text.x = element_text(angle=90, hjust=1)) + ggtitle("Change in BMI for Each Time Shift")
 
-
-ggplot(pracdat, aes(x= gender, y =BMI_change)) + geom_boxplot(aes(color = gender)) + facet_grid(. ~ shift)
-
-#solid
-ggplot(na.omit(pracdat), aes(x= gender, y =BMI_change)) + geom_boxplot(aes(color = gender)) + facet_grid(. ~ shift)
-
-#decent
-p1 <- ggplot(na.omit(pracdat), aes(x = shift, y = VigTime, fill=gender)) + geom_bar(stat="identity") + theme_minimal()
-p2 <- ggplot(na.omit(pracdat), aes(x = shift, y = WalkTime, fill=gender)) + geom_bar(stat="identity") + theme_minimal()
-p3 <- ggplot(na.omit(pracdat), aes(x = shift, y = ModTime, fill=gender)) + geom_bar(stat="identity") + theme_minimal()
-grid.arrange(p1, p2, p3, nrow = 2)
-
+#
+p1 <- ggplot(na.omit(pracdat), aes(x = shift, y = VigTime, fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))
+p2 <- ggplot(na.omit(pracdat), aes(x = shift, y = WalkTime, fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))
+p3 <- ggplot(na.omit(pracdat), aes(x = shift, y = ModTime, fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))
+p4 <- ggplot(na.omit(pracdat), aes(x = shift, y = Total_Met_Min, fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))
+grid.arrange(p1, p2, p3, p4, nrow = 2)
 
 ```
 
