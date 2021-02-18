@@ -82,7 +82,7 @@ sum(complete.cases(pracdat[6])) #232 of the 352 observations have data for lbs g
 
 Our first graph shows the distribution of total metabolic minutes by increasing age for both genders of employees in the call center study. Female employees see most of their peak total metabolic minutes from the age group 20 to 30. After around age 32 it begins to average out and see a smaller range of values. From age 45 onward the total metabolic minutes stays under 2400 minutes. The male employees have their total metabolic minutes peak just under 7500 minutes. The rest of the male call center employees had total metabolic minutes under about 3500 minutes. Male and female employees do not show similar total metabolic minutes distributions for ages 20 to 60.   
 
-
+The change in BMI over the 8 month study period for the different shift start times is displayed in a boxplot with male and female separated. We see smaller spread of BMI change values for work shifts starting between 11am and 2pm with only one female observation at the 2pm shift being a large outlier. The 8am start time shift is the only time that has a more spread distribution of BMI change for male over female employees. There are less male employees so the mean BMI change for each shift can be pulled higher more easily by the outlier observations. Overall we see larger BMI changes from the morning shifts of both genders. 
 
 ```{r, fig.height=4, fig.width=6}
 #Gender Total Metabolic by Age
