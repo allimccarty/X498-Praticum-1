@@ -88,7 +88,6 @@ grid.arrange(p1, p2, p3, p4, nrow = 2)
 
 ```
 
-
 Test for normality of the continuous variables:
 
 ```{r}
@@ -116,7 +115,6 @@ ggplot(data = pracdat.abnormal , aes(x = value)) + stat_density() + facet_wrap(~
 ggplot(data = pracdat.abnormal , aes(x = log(value))) + stat_density() + facet_wrap(~variable, scales = "free")
 # Much better
 
-
 #Perform the transformation to overall dataframe
 pracdat$lbs_gained <- log(pracdat$lbs_gained+1)
 pracdat$pounds_gained <- log(pracdat$pounds_gained+1)
@@ -127,6 +125,14 @@ pracdat$Total_Met_Min <- log(pracdat$Total_Met_Min+1)
 ```
 
 **NOTE THAT ANY DATAFRAME AFTER THIS LINE DERIVED FROM PRACDAT HAS LOG TRANSFORMATIONS IN POUNDS GAINED AND EXERCISE MINUTES ESTIMATES**
+
+
+# Now, let's test for collinearity between variables:
+```{r}
+pairs(pracdat[c(3, 7:13)])
+```
+
+The first obvious thing to note is that BMI and body weight are positively correlates.
 
 ### Model Analysis
 Commentary on lack of data for lbs gained and motivation for building two separate models: 
