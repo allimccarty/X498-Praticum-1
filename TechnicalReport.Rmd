@@ -64,8 +64,6 @@ sum(complete.cases(pracdat[6])) #232 of the 352 observations have data for lbs g
 
 Visuals for Categorical Variables
 
-
-
 ```{r}
 ggplot(pracdat, aes(x=Age, y = BMI)) + geom_point(aes(color=gender))
 
@@ -132,7 +130,7 @@ pracdat$Total_Met_Min <- log(pracdat$Total_Met_Min+1)
 pairs(pracdat[c(3, 7:13)])
 ```
 
-The first obvious thing to note is that BMI and body weight are positively correlates.
+The first obvious thing to note is that BMI and body weight are positively correlated.  This should be expected, becuase we caluclated BMI via a linear combination including body weight.
 
 ### Model Analysis
 Commentary on lack of data for lbs gained and motivation for building two separate models: 
