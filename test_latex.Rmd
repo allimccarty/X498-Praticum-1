@@ -78,22 +78,25 @@ sum(complete.cases(pracdat[6])) #232 of the 352 observations have data for lbs g
 
 ## Exploratory Data Analysis:
 
-Visuals for Categorical Variables
+###Visuals for Categorical Variables
+
+Our first graph shows the distribution of total metabolic minutes by increasing age for both genders of employees in the call center study. Female employees see most of their peak total metabolic minutes from the age group 20 to 30. After around age 32 it begins to average out and see a smaller range of values. From age 45 onward the total metabolic minutes stays under 2400 minutes. The male employees have their total metabolic minutes peak just under 7500 minutes. The rest of the male call center employees had total metabolic minutes under about 3500 minutes. Male and female employees do not show similar total metabolic minutes distributions for ages 20 to 60.   
+
+
 
 ```{r, fig.height=4, fig.width=6}
 #Gender Total Metabolic by Age
-ggplot(na.omit(pracdat), aes(x = Age, y = Total_Met_Min, color = gender)) + geom_line(size = .8) + facet_grid(. ~ gender) + theme_bw() + theme(panel.grid = element_blank()) + ggtitle("Total Metabolic Minutes by Age and Gender")
+ggplot(na.omit(pracdat), aes(x = Age, y = Total_Met_Min, color = gender)) + geom_line(size = .8) + facet_grid(. ~ gender) + theme_bw() + theme(panel.grid = element_blank()) + ggtitle("Total Metabolic Minutes by Age for Each Gender")
 
 #Change in BMI for Each Time Shift
 ggplot(na.omit(pracdat), aes(x= gender, y =BMI_change)) + geom_boxplot(aes(color = gender)) + facet_grid(. ~ shift) + theme(axis.text.x = element_text(angle=90, hjust=1)) + ggtitle("Change in BMI for Each Time Shift")
 
-#
+#NEED TO FIX WITH AVERAGES OF GENDER
 p1 <- ggplot(na.omit(pracdat), aes(x = shift, y = VigTime, fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))
 p2 <- ggplot(na.omit(pracdat), aes(x = shift, y = WalkTime, fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))
 p3 <- ggplot(na.omit(pracdat), aes(x = shift, y = ModTime, fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))
 p4 <- ggplot(na.omit(pracdat), aes(x = shift, y = Total_Met_Min, fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))
 grid.arrange(p1, p2, p3, p4, nrow = 2)
-
 ```
 
 
