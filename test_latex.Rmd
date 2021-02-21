@@ -89,15 +89,16 @@ The change in BMI over the 8 month study period for the different shift start ti
 ggplot(na.omit(pracdat), aes(x = Age, y = Total_Met_Min, color = gender)) + geom_line(size = .8) + facet_grid(. ~ gender) + theme_bw() + theme(panel.grid = element_blank()) + ggtitle("Total Metabolic Minutes by Age for Each Gender")
 
 #Change in BMI for Each Time Shift
-ggplot(na.omit(pracdat), aes(x= gender, y = BMI_change)) + geom_boxplot(aes(color = gender)) + facet_grid(. ~ shift)  + ggtitle("Change in BMI for Each Time Shift") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other", "NA")) 
+ggplot(na.omit(pracdat),aes(x=gender,y=BMI_change)) + geom_boxplot(aes(color=gender)) + facet_grid(. ~ shift)+ theme(axis.text.x = element_text(angle=90,vjust=.5,hjust=1)) + ggtitle("Change in BMI for Each Time Shift")
 
-p1 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(VigTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1)) + xlab("Shift Time") + ylab("Average Vig Time") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other")) 
+#Average Times by Gender for Each Shift
+p1 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(VigTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, vjust=.5, hjust=1)) + xlab("Shift Time") + ylab("Average Vig Time") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other")) 
 
-p2 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(WalkTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() +theme(axis.text.x = element_text(angle=90, hjust=1))+ xlab("Shift Time") + ylab("Average Walk Time") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other"))
+p2 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(WalkTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() +theme(axis.text.x = element_text(angle=90, vjust=.5,hjust=1))+ xlab("Shift Time") + ylab("Average Walk Time") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other"))
 
-p3 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(ModTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))+ xlab("Shift Time") + ylab("Average Mod Time") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other"))
+p3 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(ModTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, vjust=.5, hjust=1))+ xlab("Shift Time") + ylab("Average Mod Time") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other"))
 
-p4 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(Total_Met_Min), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))+ xlab("Shift Time") + ylab("Average Total Metabolic Minutes") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other"))
+p4 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(Total_Met_Min), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, vjust=.5,hjust=1))+ xlab("Shift Time") + ylab("Average Total Metabolic Minutes") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other"))
 
 grid.arrange(p1, p2, p3, p4, nrow = 2)
 ```
