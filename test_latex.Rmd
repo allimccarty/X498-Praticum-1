@@ -74,9 +74,48 @@ sum(complete.cases(pracdat[1])) #348 out of 352 observations have data on shift
 sum(complete.cases(pracdat[5])) #348 out of 352 observations have data on binary weight gain
 sum(complete.cases(pracdat[13])) #351 of the 352 observations have metabolic minutes data (meaning they also have data on walk, vig, and mod ex time)
 sum(complete.cases(pracdat[6])) #232 of the 352 observations have data for lbs gained
+
+#Table of Descriptive Statistics:
+quandat <- stat.desc(pracdat[3:13])
+options(scipen=100)
+options(digits=2)
+descriptives.df <- stat.desc(pracdat[c(3:4, 7:13)], basic = F)
+names(descriptives.df) <- c("Age", "Height", "Pounds Gaines", "Body Weight", "BMI", "Vigorous Activity Minutes", "Walking Minutes", "Moderate Activity Minutes", "Total Metabolic Minutes")
+descriptives.df <- descriptives.df[-c(4, 5), ]
+formattable(descriptives.df, align =c("l", rep("c", rep(6)), "r"), caption = "Descriptive Statistics for Quantitative Variables")
 ```
 
 ## Exploratory Data Analysis:
+
+In order to test the assumption of normalcy for the variables, we made QQPlots for all of the continuous numeric variables (Appendix 1).  Based on the plots, we think that age, height, body weight, and BMI are approximately normal, at least normal enough that they do not merit transformations.
+
+Pounds gained, VigTime, ModTime, and WalkTime, and TotalMetMinutes do not follow a normal distribution and have a strong right skew. We will take a closer look at these variables and try a log transformation if necessary.
+
+```{r, echo = FALSE, fig.height=4}
+library(car)
+pracdat.cont <- pracdat[c(-1:-2, -5:-6)]
+cont.labels <- colnames(pracdat.cont)
+pracdat.abnormal <- pracdat.cont[c(3, 6:9)]
+library(reshape2)
+pracdat.abnormal<- melt(pracdat.abnormal)
+ggplot(data = pracdat.abnormal , aes(x = value)) + stat_density() + facet_wrap(~variable, scales = "free") +theme_bw()
+#Most have an extreme right skew
+```
+
+```{r, fig.height=4}
+#Now, let's take a log transformation of all of these variables
+ggplot(data = pracdat.abnormal , aes(x = log(value +1))) + stat_density() + facet_wrap(~variable, scales = "free")
+# Much better
+
+
+#Perform the transformation to overall dataframe
+pracdat$lbs_gained <- log(pracdat$lbs_gained+1)
+pracdat$pounds_gained <- log(pracdat$pounds_gained+1)
+pracdat$VigTime <- log(pracdat$VigTime+1)
+pracdat$WalkTime <- log(pracdat$WalkTime+1)
+pracdat$ModTime <- log(pracdat$ModTime+1)
+pracdat$Total_Met_Min <- log(pracdat$Total_Met_Min+1)
+```
 
 ### Visuals for Categorical Variables
 
@@ -84,7 +123,7 @@ Our first graph shows the distribution of total metabolic minutes by increasing 
 
 ```{r, fig.height=4, fig.width=6, echo = FALSE}
 #Gender Total Metabolic by Age
-ggplot(na.omit(pracdat), aes(x = Age, y = Total_Met_Min, color = gender)) + geom_line(size = .8) + facet_grid(. ~ gender) + theme_bw() + theme(panel.grid = element_blank()) + ggtitle("Total Metabolic Minutes by Age for Each Gender")
+filter(pracdat, !is.na(gender)) %>% ggplot(aes(x = Age, y = Total_Met_Min, color = gender)) + geom_point(size = .8)+geom_smooth(method="lm", se=FALSE) + facet_grid(. ~ gender) + theme_bw() + theme(panel.grid = element_blank())+labs(caption="Figure X")+ggtitle("Total Metabolic Minutes by Age and Gender")+ylab("Total Metabolic Minutes")
 ```
 
 The change in BMI over the 8 month study period for the different shift start times is displayed in a boxplot with male and female separated. We see smaller spread of BMI change values for work shifts starting between 11am and 2pm with only one female observation at the 2pm shift being a large outlier. The 8am start time shift is the only time that has a more spread distribution of BMI change for male over female employees. There are less male employees so the mean BMI change for each shift can be pulled higher more easily by the outlier observations. Overall we see larger BMI changes from the morning shifts of both genders. 
@@ -108,33 +147,6 @@ p4 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(Total_Met_Min), fill=gend
 grid.arrange(p1, p2, p3, p4, nrow = 2)
 ```
 
-In order to test the assumption of normalcy for the variables, we made QQPlots for all of the continuous numeric variables (Appendix 1).  Based on the plots, we think that age, height, body weight, and BMI are approximately normal (at least normal enough that they do not merit transformations).
-
-Pounds gained, VigTime, ModTime, and WalkTime, and TotalMetMinutes do not follow a normal distribution and have a strong right skew. We will take a closer look at these variables and try a log transformation if necessary.
-
-```{r, echo = FALSE}
-library(car)
-pracdat.cont <- pracdat[c(-1:-2, -5:-6)]
-cont.labels <- colnames(pracdat.cont)
-pracdat.abnormal <- pracdat.cont[c(3, 6:9)]
-library(reshape2)
-pracdat.abnormal<- melt(pracdat.abnormal)
-ggplot(data = pracdat.abnormal , aes(x = value)) + stat_density() + facet_wrap(~variable, scales = "free")
-#Most have an extreme right skew
-
-#Now, let's take a log transformation of all of these variables
-ggplot(data = pracdat.abnormal , aes(x = log(value))) + stat_density() + facet_wrap(~variable, scales = "free")
-# Much better
-
-
-#Perform the transformation to overall dataframe
-pracdat$lbs_gained <- log(pracdat$lbs_gained+1)
-pracdat$pounds_gained <- log(pracdat$pounds_gained+1)
-pracdat$VigTime <- log(pracdat$VigTime+1)
-pracdat$WalkTime <- log(pracdat$WalkTime+1)
-pracdat$ModTime <- log(pracdat$ModTime+1)
-pracdat$Total_Met_Min <- log(pracdat$Total_Met_Min+1)
-```
 
 Now, let's test for collinearity between variables:
 

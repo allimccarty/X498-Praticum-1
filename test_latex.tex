@@ -24,12 +24,16 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{hyperref}
 \hypersetup{unicode=true,
-            pdftitle={test\_latex},
-            pdfauthor={jmajoros},
+            pdftitle={Technical Report},
+            pdfauthor={Jordan Majoros, Alli McCarty, Joe Spatz},
             pdfborder={0 0 0},
             breaklinks=true}
 \urlstyle{same}  % don't use monospace font for urls
-\usepackage{graphicx,grffile}
+\usepackage{graphicx}
+% grffile has become a legacy package: https://ctan.org/pkg/grffile
+\IfFileExists{grffile.sty}{%
+\usepackage{grffile}
+}{}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
 \def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
@@ -74,21 +78,285 @@
 
 \setlength{\droptitle}{-2em}
 
-  \title{test\_latex}
+  \title{Technical Report}
     \pretitle{\vspace{\droptitle}\centering\huge}
   \posttitle{\par}
-    \author{jmajoros}
+    \author{Jordan Majoros, Alli McCarty, Joe Spatz}
     \preauthor{\centering\large\emph}
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
     \date{2/15/2021}
 
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
 
 \begin{document}
 \maketitle
 
+\hypertarget{abstract}{%
+\subsection{Abstract:}\label{abstract}}
 
+The purpose of this analysis is to use modern statistical applications
+to determine what variables, with a particular emphasis on minutes of
+metabolic exercise and time of work shift, influence weight gain in
+Americans. The data comes from a self-report questionnaire administered
+by a call center over an eight month period. The data was processed and
+exploratory data analysis was performed to gain insight into basic
+trends and collinearity between variables. Several transformations were
+performed on variables with skewed distributions, and the most important
+variables were selected via nonparametric analysis to be included in our
+models. Two models were constructed; a logistic regression model to
+obtain binary predictions on weight gain, and a generalized additive
+model using various predictors to estimate weight gain in pounds. The
+model fits were cross validated via **\emph{WHAT??} and residual
+analysis was performed.
+
+\hypertarget{introduction}{%
+\subsection{Introduction:}\label{introduction}}
+
+Diseases such as obesity, diabetes, coronary heart disease, and
+musculoskeletal disorders have rapidly increased in the United States in
+the last decade, which can be partially attributed to the change in
+office culture to be heavily computer-based and therefore more
+sedentary. Increased prevalence of such diseases are expensive to
+organizations and influence how productive and efficient workers can be.
+Lifestyle habits of employees affect rates of obesity and
+obesity-related diseases in the United States. The purpose of our
+analysis was to answer what is affecting the weight change of employees
+in a call center. Descriptive statistics and graphs were used to
+visualize relationships between different categorical and continuous
+variables. We confirmed normality for these variables and used log plus
+one transformation for right skewed distributions. Work shift and total
+metabolic minutes were two variables at the center of our analysis. We
+showed their effect on weight gain through exploratory data analysis.
+Two models have been built to show the statistical significance of
+certain predictors. The first model used logistic regression with weight
+gain (yes/no) being the categorical response variable. Our second model
+was a multivariate linear model that focuses on the significance of
+shift start time and total metabolic minutes. The following report
+records our central ideas and provides evidence for the procedures
+taken.
+
+\hypertarget{data}{%
+\subsection{Data:}\label{data}}
+
+Three additional variables were calculated using the given data and
+added to the dataset to give more depth to BMI. The participants of the
+call center study provided their height, number of pounds gained during
+the eight month period, and body weight at the end as well. With those
+values, the ending BMI was calculated. To make the ending BMI more
+valuable we used the provided data to calculate the BMI for each
+participant before starting the 8 month study. First, the beginning body
+weight was found using the pounds gained and the weight of the
+participant at the end. Then the starting BMI was calculated using the
+formula below with weight measured in pounds and the height the
+participant presented in inches.
+
+\begin{verbatim}
+            BMI = 703 * weight (lbs) / [height (inches)]^2
+            
+\end{verbatim}
+
+Change in BMI was then calculated subtracting the starting BMI from the
+ending BMI. Many participants did not gain weight so their change in BMI
+was zero. Percentage BMI change over the 8 month period could have also
+been calculated by dividing the BMI difference and beginning BMI but
+that was not included as an additional variable. Analyzing the change in
+BMI can have advantages over strictly pounds gain if a participant
+increased their height or started at a below average weight given they
+are taller than average.
+
+\hypertarget{exploratory-data-analysis}{%
+\subsection{Exploratory Data
+Analysis:}\label{exploratory-data-analysis}}
+
+In order to test the assumption of normalcy for the variables, we made
+QQPlots for all of the continuous numeric variables (Appendix 1). Based
+on the plots, we think that age, height, body weight, and BMI are
+approximately normal, at least normal enough that they do not merit
+transformations.
+
+Pounds gained, VigTime, ModTime, and WalkTime, and TotalMetMinutes do
+not follow a normal distribution and have a strong right skew. We will
+take a closer look at these variables and try a log transformation if
+necessary.
+
+\includegraphics{test_latex_files/figure-latex/unnamed-chunk-1-1.pdf}
+
+\includegraphics{test_latex_files/figure-latex/unnamed-chunk-2-1.pdf}
+
+\hypertarget{visuals-for-categorical-variables}{%
+\subsubsection{Visuals for Categorical
+Variables}\label{visuals-for-categorical-variables}}
+
+Our first graph shows the distribution of total metabolic minutes by
+increasing age for both genders of employees in the call center study.
+Female employees see most of their peak total metabolic minutes from the
+age group 20 to 30. After around age 32 it begins to average out and see
+a smaller range of values. From age 45 onward the total metabolic
+minutes stays under 2400 minutes. The male employees have their total
+metabolic minutes peak just under 7500 minutes. The rest of the male
+call center employees had total metabolic minutes under about 3500
+minutes. Male and female employees do not show similar total metabolic
+minutes distributions for ages 20 to 60.
+
+\includegraphics{test_latex_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+The change in BMI over the 8 month study period for the different shift
+start times is displayed in a boxplot with male and female separated. We
+see smaller spread of BMI change values for work shifts starting between
+11am and 2pm with only one female observation at the 2pm shift being a
+large outlier. The 8am start time shift is the only time that has a more
+spread distribution of BMI change for male over female employees. There
+are less male employees so the mean BMI change for each shift can be
+pulled higher more easily by the outlier observations. Overall we see
+larger BMI changes from the morning shifts of both genders.
+
+\includegraphics{test_latex_files/figure-latex/unnamed-chunk-4-1.pdf}
+The next four visuals show average exercise time in minutes by gender
+for different intensity exercises. The three intensity measures are
+vigorous, moderate, and walking. Vigorous being the high-intensity
+exercise. The fourth barplot uses the three intensities to calculate
+total metabolic minutes. Each graph examines the average times for each
+starting shift time.
+
+\includegraphics{test_latex_files/figure-latex/unnamed-chunk-5-1.pdf}
+
+Now, let's test for collinearity between variables:
+
+\includegraphics{test_latex_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+The first obvious thing to note is that BMI and body weight are
+positively correlated. This should be expected, because we caluclated
+BMI via a linear combination including body weight.
+
+\hypertarget{model-process}{%
+\subsection{Model Process:}\label{model-process}}
+
+Commentary on lack of data for lbs gained and motivation for building
+two separate models:
+
+There are a lot of N/A values for lbs gained because we will not have
+data for a specific observation unless they gained weight. If a person
+lost weight in the study, this would be populated as ``N/A'' for lbs
+gained (col 6). For the purposes of the second model, we may choose to
+select the subset of the population who gained weight (have data for
+this variable)/or did not gain weight (do NOT have data for this
+variable) and create a model specific to that subset.
+
+For Model 1, we will just use the binary weight gain variable to create
+a logistic model. For Model 2, we will subset the sample to those who
+gained weight, and build multiple models to determine which factors
+influenced this weight gain.
+
+Data Cleaning specific to our models:
+
+We created a logistic regression model for our binary dependent variable
+`weightgain', yes or no. The model with the best fit contained three
+predictor variables: Total\_Met\_Min, gender, and Age. The response will
+be close to 1 when the person has gained weight and 0 when they have not
+gained weight over the 8 month period.
+
+glm(weightgain \textasciitilde{} Total\_Met\_Min + gender + Age, data =
+pracdat.mod1, family = ``binomial'')
+
+\begin{tabular}{l|r|r|r|r}
+\hline
+  & Estimate & Std. Error & z value & Pr(>|z|)\\
+\hline
+(Intercept) & 0.935 & 0.535 & 1.75 & 0.081\\
+\hline
+Total\_Met\_Min & 0.034 & 0.049 & 0.68 & 0.494\\
+\hline
+genderMale & -0.578 & 0.262 & -2.20 & 0.028\\
+\hline
+Age & -0.004 & 0.012 & -0.32 & 0.746\\
+\hline
+\end{tabular}
+
+\includegraphics{test_latex_files/figure-latex/unnamed-chunk-7-1.pdf}
+
+\textbf{If our specific aims are testing whether shift and total
+metabolic minutes have an effect on weight gain, shouldn't the be in all
+the models}
+
+Multivariate Linear Model - only GAINED
+
+\begin{verbatim}
+##   c.cv.weight1..cv.weight3..cv.weight4.
+## 1                                  0.39
+## 2                                  0.39
+## 3                                  0.38
+\end{verbatim}
+
+\begin{tabular}{l|r|r|r|r}
+\hline
+  & Estimate & Std. Error & t value & Pr(>|t|)\\
+\hline
+(Intercept) & 2.4299 & 0.2133 & 11.39 & 0.000\\
+\hline
+shift11am & -0.1790 & 0.1590 & -1.13 & 0.262\\
+\hline
+shift12pm & -0.1177 & 0.2370 & -0.50 & 0.620\\
+\hline
+shift1pm & -0.5157 & 0.2895 & -1.78 & 0.076\\
+\hline
+shift2pm & 0.4167 & 0.2270 & 1.84 & 0.068\\
+\hline
+shift7am & 0.3085 & 0.1850 & 1.67 & 0.097\\
+\hline
+shift8am & 0.3241 & 0.1262 & 2.57 & 0.011\\
+\hline
+shift9am & 0.0687 & 0.1481 & 0.46 & 0.643\\
+\hline
+shiftother & 0.1295 & 0.2096 & 0.62 & 0.537\\
+\hline
+Total\_Met\_Min & 0.0025 & 0.0184 & 0.13 & 0.894\\
+\hline
+Age & 0.0015 & 0.0041 & 0.38 & 0.707\\
+\hline
+genderMale & 0.1790 & 0.0979 & 1.83 & 0.069\\
+\hline
+\end{tabular}
+
+\includegraphics{test_latex_files/figure-latex/unnamed-chunk-8-1.pdf}
+
+Based on preliminary data analysis, we found shift is not a significant
+predictor. We found that 7-8 am are significant, which is an interesting
+perspective on morning versus afternoon shifts.
+
+\hypertarget{discussion-and-conclusion}{%
+\subsection{Discussion and Conclusion}\label{discussion-and-conclusion}}
+
+\hypertarget{appendix}{%
+\subsection{Appendix}\label{appendix}}
+
+Test for normality of the continuous variables:
+
+\includegraphics{test_latex_files/figure-latex/unnamed-chunk-9-1.pdf}
+
+\begin{verbatim}
+##      Age height pounds_gained bweight BMI VigTime WalkTime ModTime
+## [1,] 269    189           105     133 284      87      115      91
+## [2,] 179    288           122     331  83     282      206      80
+##      Total_Met_Min Begin_bweight Before_BMI BMI_change
+## [1,]            87           331        284        122
+## [2,]           287           133         83        262
+\end{verbatim}
+
+\includegraphics{test_latex_files/figure-latex/unnamed-chunk-9-2.pdf}
 
 
 \end{document}

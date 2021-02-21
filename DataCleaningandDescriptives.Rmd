@@ -68,7 +68,8 @@ options(scipen=100)
 options(digits=2)
 descriptives.df <- stat.desc(pracdat[c(3:4, 7:13)], basic = F)
 names(descriptives.df) <- c("Age", "Height", "Pounds Gaines", "Body Weight", "BMI", "Vigorous Activity Minutes", "Walking Minutes", "Moderate Activity Minutes", "Total Metabolic Minutes")
-formattable(descriptives.df, align =c("l", rep("c", rep(8)), "r"), caption = "Descriptive Statistics for Quantitative Variables")
+descriptives.df <- descriptives.df[-c(4, 5), ]
+formattable(descriptives.df, align =c("l", rep("c", rep(6)), "r"), caption = "Descriptive Statistics for Quantitative Variables")
 
 # We could also do this as a kable
 library(kableExtra)
