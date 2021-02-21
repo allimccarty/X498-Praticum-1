@@ -21,6 +21,7 @@ library(gridExtra)
 library(ggpubr)
 library(ggthemes)
 library(mgcv)
+library("colorspace")
 ```
 
 ```{r InitialDataCleaning, include=FALSE}
@@ -118,7 +119,7 @@ pracdat$shift.recode <- shift.recode
 
 # Now, let's test for collinearity between variables:
 ```{r}
-pairs(pracdat[c(3, 7:13)])
+pairs(pracdat[c(3:4, 7:13)])
 ```
 
 The first obvious thing to note is that BMI and body weight are positively correlated.  This should be expected, becuase we caluclated BMI via a linear combination including body weight. We also know that the same is true for VigTime, WalkTime, ModTime, and Total Metabolic Minutes.

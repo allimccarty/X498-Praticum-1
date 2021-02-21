@@ -119,32 +119,118 @@ pracdat$Total_Met_Min <- (pracdat$Total_Met_Min)^(1/3)
 
 Figure X shows that the cubic root transformation did not perfectly transform the data to normal distributions.  However, the transformation did make the data *more* normal.  Thus, the variables for pounds gained, Vigorous exercise time, moderate exercise time, walk time, and total metabolic minutes are included in EDA and model construction with cubic root transformations.
 
+
+Next, we wanted to check for collinearity between our variables.  We created a pairs plot in Figure X to visualize the association between the variables in our dataset. 
+
+```{r}
+panel.cor <- function(x, y, ...)
+{
+par(usr = c(0, 1, 0, 1))
+txt <- as.character(format(cor(as.numeric(x), as.numeric(y)), digits=2))
+text(0.5, 0.5, txt, cex =1)
+}
+names.vector <- c("Age", "Height", "lbs Gained", "Body Weight", "BMI", "VigTime", "WalkTime", "ModTime", "TotalMet")
+pairs(na.omit(pracdat[c(3:4, 7:13)]), upper.panel=panel.cor,labels = names.vector)
+
+```
+
+The first obvious thing to note is that BMI and body weight are strongly positively correlated (correlation value of .87).  This should be expected, becuase we caluclated BMI via a linear combination including body weight. We also know that the same is true for VigTime, WalkTime, ModTime, and Total Metabolic Minutes.
+
+None of the other variables demonstrate strong linearity, confirmed by the correlation calculation included in the top panel of Figure X.
+
 ### Visuals for Categorical Variables
 
-Our first graph shows the distribution of total metabolic minutes by increasing age for both genders of employees in the call center study. Female employees see most of their peak total metabolic minutes from the age group 20 to 30. After around age 32 it begins to average out and see a smaller range of values. From age 45 onward the total metabolic minutes stays under 2400 minutes. The male employees have their total metabolic minutes peak just under 7500 minutes. The rest of the male call center employees had total metabolic minutes under about 3500 minutes. Male and female employees do not show similar total metabolic minutes distributions for ages 20 to 60.   
+Figure X shows the distribution of total metabolic minutes by increasing age for both genders of employees in the call center study. Female employees see most of their peak total metabolic minutes from the age group 20 to 30. After around age 32 it begins to average out and see a smaller range of values. From age 45 onward the total metabolic minutes stays under 2400 minutes. The male employees have their total metabolic minutes peak just under 7500 minutes. Figure X demonstrates that the relationship between age and total metabolic minutes is slightly negative.  This association is stronger for males compared to females.
 
 ```{r, fig.height=4, fig.width=6, echo = FALSE}
 #Gender Total Metabolic by Age
 filter(pracdat, !is.na(gender)) %>% ggplot(aes(x = Age, y = Total_Met_Min, color = gender)) + geom_point(size = .8)+geom_smooth(method="lm", se=FALSE) + facet_grid(. ~ gender) + theme_bw() + theme(panel.grid = element_blank())+labs(caption="Figure X")+ggtitle("Total Metabolic Minutes by Age and Gender")+ylab("Total Metabolic Minutes")
 ```
 
-The change in BMI over the 8 month study period for the different shift start times is displayed in a boxplot with male and female separated. We see smaller spread of BMI change values for work shifts starting between 11am and 2pm with only one female observation at the 2pm shift being a large outlier. The 8am start time shift is the only time that has a more spread distribution of BMI change for male over female employees. There are less male employees so the mean BMI change for each shift can be pulled higher more easily by the outlier observations. Overall we see larger BMI changes from the morning shifts of both genders. 
+We also want to see if there is an association between age & BMI when we stratify for gender.  Figure X demonstrates that there is slightly positive relationship between age and BMI, and the relationship is more dramatic for females compared to males. We should also note that there are number of observations with 0-value inpute for total metabolic minutes.  0-value observations for metabolic minutes are more common for females than males, and tend to be observed most commonly in females under the age of 50 years.
+
+```{r}
+#Scatterplot between Age &BMI with gender
+filter(pracdat, !is.na(gender)) %>% ggplot(aes(x=Age, y = BMI, color=gender))+ geom_point()+theme_bw()+geom_smooth(method="lm",se=FALSE)+ggtitle("Association between Age & BMI by Gender") + labs(caption="Figure X")
+```
+
+The change in BMI over the 8 month study period for the different shift start times is displayed in Figure X. We see smaller spread of BMI change values for work shifts starting between 11am and 2pm with only one female observation at the 2pm shift being a large outlier. The 8am start time shift is the only time that has a more spread distribution of BMI change for male over female employees. There are less male employees so the mean BMI change for each shift can be pulled higher more easily by the outlier observations. Overall we see larger BMI changes from the morning shifts of both genders. 
 
 ```{r}
 #Change in BMI for Each Time Shift
-ggplot(na.omit(pracdat),aes(x=gender,y=BMI_change)) + geom_boxplot(aes(color=gender)) + facet_grid(. ~ shift)+ theme(axis.text.x = element_text(angle=90,vjust=.5,hjust=1)) + ggtitle("Change in BMI for Each Time Shift")
+#Boxplot for gender and BMI change stratified for shift
+filter(pracdat, !is.na(gender)& !is.na(shift.recode)) %>% ggplot(aes(x= gender, y =BMI_change, color=gender)) + geom_boxplot() + facet_grid(. ~ shift)+theme_bw() +labs(caption="Figure X") + ggtitle("Association of BMI Change and Shift by Gender")+ theme(axis.text.x = element_text(angle=90, vjust=.5,hjust=1))
 ```
-The next four visuals show average exercise time in minutes by gender for different intensity exercises. The three intensity measures are vigorous, moderate, and walking. Vigorous being the high-intensity exercise. The fourth barplot uses the three intensities to calculate total metabolic minutes. Each graph examines the average times for each starting shift time.  
+
+Overall, due to the high number of stratum in shift, it is difficult to observe changes in distributions and associations for each shift individually.  It may be more helpful to look for associations with other variables and shift according to the time of day, rather than a specific time.  For this reason, we included a recoded variable of shift.  Observations with start times between 7am-11am are considered "morning" shift, those between 12pm-3pm are considered "afternoon" shift, and other start times are coded as "other". The recoded variable for shift is visualized in Figure X.
 
 ```{r}
+#Recode for Shift
+#Create New Grouping Model Based on Shift Time
+shift2 <- pracdat$shift
+#Apologies, there was probably a more elegant way to do this
+shift.recode<- character(length(shift2))
+shift.recode[shift2 == "7am"] <- "morning"
+shift.recode[shift2 == "8am"] <- "morning"
+shift.recode[shift2 == "9am"] <- "morning"
+shift.recode[shift2 == "10am"]<- "morning"
+shift.recode[shift2 == "11am"]<- "afternoon"
+shift.recode[shift2 == "12pm"]<- "afternoon"
+shift.recode[shift2 == "1pm"] <- "afternoon"
+shift.recode[shift2 == "2pm"] <- "afternoon"
+shift.recode[shift2 == "3pm"] <- "other"
+shift.recode[shift2 == "other"] <- "other"
+shift.recode[is.na(shift2)] <- NA
+pracdat$shift.recode <- shift.recode
+
+#Boxplot for gender and BMI change stratified for recoded shift
+filter(pracdat, !is.na(gender) & !is.na(shift.recode)) %>% ggplot(aes(x= gender, y =BMI_change, color=gender)) + geom_boxplot() + facet_grid(. ~ shift.recode)+theme_bw()+ ggtitle("Association of BMI Change and Recoded Shift by Gender")+ theme(axis.text.x = element_text(angle=90, vjust=.5,hjust=1))
+```
+
+
+The difference is more prominant when we are using recoded shift rather than shift.  It appears that indivduals with the morning shift experienced a greater change in BMI than individuals with a shift time in the afternoon. Females with a shift time of other also tended to have a greater high-end change in BMI over the study, but there were so few females in this category that the resulting distribution is probably not generalizable. 
+
+Figure X shows the association between metabolic minutes and pounds gained stratified by both shift and recoded shift. The vast majority of the people who did no metabolic exercise were members of the morning shift.  However, it is more difficult to observe this difference when shift is broken down by the hour.
+```{r}
+a1<- ggplot(data=pracdat, aes(x=Total_Met_Min, y=pounds_gained, color=shift))+geom_point()+theme_bw()+ggtitle("Pounds Gained and Total Metabolic Minutes by Shift")
+a2 <- ggplot(data=pracdat, aes(x=Total_Met_Min, y=pounds_gained, color=shift.recode))+geom_point()+theme_bw()+ggtitle("Pounds Gained and Total Metabolic Minutes by Recoded Shift") + labs(caption="Figure X")
+grid.arrange(a1, a2)
+```
+
+
+Figure X demonstrates the associations of weight gain with age, height, BMI, and metabolic minutes. There does not appear to be any strong patterns for the binary variable weight gain with age, height, BMI, and metabolic miuntes.  Thus, we do not suspect that age, height, BMI, or metabolic minutes are strongly indicative of whether a person gained weight or not.
+
+```{r}
+check1 <-filter(pracdat, !is.na(weightgain)) %>% ggplot() + geom_boxplot(mapping = aes(x = weightgain, y=Age))+coord_flip()+theme_bw()+ggtitle("Weight Gain by Age")
+check2 <-filter(pracdat, !is.na(weightgain)) %>% ggplot() + 
+  geom_boxplot(mapping = aes(x = weightgain, y=height))+coord_flip()+theme_bw()+ggtitle("Weight Gain by Height")
+check3 <-filter(pracdat, !is.na(weightgain)) %>% ggplot() + 
+  geom_boxplot(mapping = aes(x = weightgain, y=BMI))+coord_flip()+theme_bw()+ggtitle("Weight Gain by BMI")
+check4 <- filter(pracdat, !is.na(weightgain)) %>% ggplot()+
+  geom_boxplot(mapping = aes(x = weightgain, y=Total_Met_Min))+coord_flip()+theme_bw()+ggtitle("Weight Gain by Total Metabolic Minutes") + labs(caption="Figure X")
+grid.arrange(check1, check2, check3, check4, ncol=1)
+#Again, these do not seem to be very different/significant predictors.  Let's try to stratify by gender.
+```
+
+Figure X demonstrates the difference in the association between pounds gained and metabolic minutes for males and females.  The association between metabolic minutes and pounds gained is negative for males.  On the contrary, the association is positive for females.  This is somewhat contradictory to the expected association, but could be attributable to females gaining weight through muscle mass as a result of increased amounts of metabolic exercise.
+
+```{r}
+filter(pracdat, !is.na(gender)) %>% ggplot(aes(x=Total_Met_Min, y=pounds_gained, color=gender))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE)+ggtitle("Association between Pounds Gained and Total Metabolic Minutes by Gender")+labs(caption="Figure X")
+```
+
+
+
+```{r, include=FALSE}
+#Figure X show average exercise time in minutes by gender for different intensity exercises. The three intensity measures are vigorous, moderate, and walking. Vigorous being the high-intensity exercise. The fourth barplot uses the three intensities to calculate total metabolic minutes. Each graph examines the average times for each starting shift time. 
+#We wanted to look at the breakdown of exercise minutes with gender and shift
 #Average Times by Gender for Each Shift
-p1 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(VigTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, vjust=.5, hjust=1)) + xlab("Shift Time") + ylab("Average Vig Time") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other")) + ggtitle("Average Vigorous Time by Shift")
+p1 <- filter(pracdat, !is.na(gender)) %>% ggplot(aes(x = shift, y = mean(VigTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, vjust=.5, hjust=1)) + xlab("Shift Time") + ylab("Average Vig Time") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other")) + ggtitle("Average Vigorous Time by Shift")
 
-p2 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(WalkTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() +theme(axis.text.x = element_text(angle=90, vjust=.5,hjust=1))+ xlab("Shift Time") + ylab("Average Walk Time") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other")) + ggtitle("Average Walk Time by Shift")
+p2 <- filter(pracdat, !is.na(gender)) %>% ggplot(aes(x = shift, y = mean(WalkTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() +theme(axis.text.x = element_text(angle=90, vjust=.5,hjust=1))+ xlab("Shift Time") + ylab("Average Walk Time") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other")) + ggtitle("Average Walk Time by Shift")
 
-p3 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(ModTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, vjust=.5, hjust=1))+ xlab("Shift Time") + ylab("Average Mod Time") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other")) + ggtitle("Average Moderate time by Shift")
+p3 <- filter(pracdat, !is.na(gender)) %>% ggplot(aes(x = shift, y = mean(ModTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, vjust=.5, hjust=1))+ xlab("Shift Time") + ylab("Average Mod Time") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other")) + ggtitle("Average Moderate time by Shift")
 
-p4 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(Total_Met_Min), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, vjust=.5,hjust=1))+ xlab("Shift Time") + ylab("Average Total Metabolic Minutes") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other")) + ggtitle("Average Total Metabolic by Shift")
+p4 <- filter(pracdat, !is.na(gender)) %>% ggplot(aes(x = shift, y = mean(Total_Met_Min), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, vjust=.5,hjust=1))+ xlab("Shift Time") + ylab("Average Total Metabolic Minutes") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other")) + ggtitle("Average Total Metabolic by Shift")
 
 grid.arrange(p1, p2, p3, p4, nrow = 2)
 ```
@@ -168,23 +254,6 @@ For Model 1, we will just use the binary weight gain variable to create a logist
 
 Data Cleaning specific to our models:
 ```{r MoreDataCleaning}
-#Create New Grouping Model Based on Shift Time
-shift2 <- pracdat$shift
-#Apologies, there was probably a more elegant way to do this
-shift.recode<- character(length(shift2))
-shift.recode[shift2 == "7am"] <- "morning"
-shift.recode[shift2 == "8am"] <- "morning"
-shift.recode[shift2 == "9am"] <- "morning"
-shift.recode[shift2 == "10am"]<- "morning"
-shift.recode[shift2 == "11am"]<- "afternoon"
-shift.recode[shift2 == "12pm"]<- "afternoon"
-shift.recode[shift2 == "1pm"] <- "afternoon"
-shift.recode[shift2 == "2pm"] <- "afternoon"
-shift.recode[shift2 == "3pm"] <- "other"
-shift.recode[shift2 == "other"] <- "other"
-shift.recode[is.na(shift2)] <- NA
-pracdat$shift.recode <- shift.recode
-
 #Create final data frame for Model #1
 pracdat.mod1 <- pracdat[-6:-7]
 #Change Weight Gain Factor Variable to Binary
