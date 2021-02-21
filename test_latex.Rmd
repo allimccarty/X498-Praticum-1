@@ -93,17 +93,17 @@ The change in BMI over the 8 month study period for the different shift start ti
 #Change in BMI for Each Time Shift
 ggplot(na.omit(pracdat),aes(x=gender,y=BMI_change)) + geom_boxplot(aes(color=gender)) + facet_grid(. ~ shift)+ theme(axis.text.x = element_text(angle=90,vjust=.5,hjust=1)) + ggtitle("Change in BMI for Each Time Shift")
 ```
-The next four visuals show average exercise time in minutes by gender for different intensity exercises. The three intensity measures are vigorous, moderate, and walking. Vigorous being the high-intensity exercise. The fourth barplot uses the three intensities to calculate total metabolic minutes. 
+The next four visuals show average exercise time in minutes by gender for different intensity exercises. The three intensity measures are vigorous, moderate, and walking. Vigorous being the high-intensity exercise. The fourth barplot uses the three intensities to calculate total metabolic minutes. Each graph examines the average times for each starting shift time.  
 
 ```{r}
 #Average Times by Gender for Each Shift
-p1 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(VigTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, vjust=.5, hjust=1)) + xlab("Shift Time") + ylab("Average Vig Time") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other")) 
+p1 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(VigTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, vjust=.5, hjust=1)) + xlab("Shift Time") + ylab("Average Vig Time") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other")) + ggtitle("Average Vigorous Time by Shift")
 
-p2 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(WalkTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() +theme(axis.text.x = element_text(angle=90, vjust=.5,hjust=1))+ xlab("Shift Time") + ylab("Average Walk Time") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other"))
+p2 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(WalkTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() +theme(axis.text.x = element_text(angle=90, vjust=.5,hjust=1))+ xlab("Shift Time") + ylab("Average Walk Time") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other")) + ggtitle("Average Walk Time by Shift")
 
-p3 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(ModTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, vjust=.5, hjust=1))+ xlab("Shift Time") + ylab("Average Mod Time") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other"))
+p3 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(ModTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, vjust=.5, hjust=1))+ xlab("Shift Time") + ylab("Average Mod Time") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other")) + ggtitle("Average Moderate time by Shift")
 
-p4 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(Total_Met_Min), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, vjust=.5,hjust=1))+ xlab("Shift Time") + ylab("Average Total Metabolic Minutes") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other"))
+p4 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(Total_Met_Min), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, vjust=.5,hjust=1))+ xlab("Shift Time") + ylab("Average Total Metabolic Minutes") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other")) + ggtitle("Average Total Metabolic by Shift")
 
 grid.arrange(p1, p2, p3, p4, nrow = 2)
 ```
@@ -180,6 +180,7 @@ pracdat.mod1$weightgain <- ifelse(pracdat.mod1$weightgain=="Yes",1,0)
 # Create subset data frames for Model #2
 pracdat.mod2 <- subset(pracdat, weightgain == "Yes")
 ```
+
 
 
 Binary WeightGain Model **should use pracdat.mod1**
