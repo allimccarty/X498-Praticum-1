@@ -157,14 +157,6 @@ filter(pracdat, !is.na(gender)) %>% ggplot(aes(x=Age, y = BMI, color=gender))+ g
 The change in BMI over the 8 month study period for the different shift start times is displayed in Figure X. We see smaller spread of BMI change values for work shifts starting between 11am and 2pm with only one female observation at the 2pm shift being a large outlier. The 8am start time shift is the only time that has a more spread distribution of BMI change for male over female employees. There are less male employees so the mean BMI change for each shift can be pulled higher more easily by the outlier observations. Overall we see larger BMI changes from the morning shifts of both genders. 
 
 ```{r}
-#Change in BMI for Each Time Shift
-#Boxplot for gender and BMI change stratified for shift
-filter(pracdat, !is.na(gender)& !is.na(shift.recode)) %>% ggplot(aes(x= gender, y =BMI_change, color=gender)) + geom_boxplot() + facet_grid(. ~ shift)+theme_bw() +labs(caption="Figure X") + ggtitle("Association of BMI Change and Shift by Gender")+ theme(axis.text.x = element_text(angle=90, vjust=.5,hjust=1))
-```
-
-Overall, due to the high number of stratum in shift, it is difficult to observe changes in distributions and associations for each shift individually.  It may be more helpful to look for associations with other variables and shift according to the time of day, rather than a specific time.  For this reason, we included a recoded variable of shift.  Observations with start times between 7am-11am are considered "morning" shift, those between 12pm-3pm are considered "afternoon" shift, and other start times are coded as "other". The recoded variable for shift is visualized in Figure X.
-
-```{r}
 #Recode for Shift
 #Create New Grouping Model Based on Shift Time
 shift2 <- pracdat$shift
@@ -182,6 +174,15 @@ shift.recode[shift2 == "3pm"] <- "other"
 shift.recode[shift2 == "other"] <- "other"
 shift.recode[is.na(shift2)] <- NA
 pracdat$shift.recode <- shift.recode
+
+#Change in BMI for Each Time Shift
+#Boxplot for gender and BMI change stratified for shift
+filter(pracdat, !is.na(gender)& !is.na(shift.recode)) %>% ggplot(aes(x= gender, y =BMI_change, color=gender)) + geom_boxplot() + facet_grid(. ~ shift)+theme_bw() +labs(caption="Figure X") + ggtitle("Association of BMI Change and Shift by Gender")+ theme(axis.text.x = element_text(angle=90, vjust=.5,hjust=1))
+```
+
+Overall, due to the high number of stratum in shift, it is difficult to observe changes in distributions and associations for each shift individually.  It may be more helpful to look for associations with other variables and shift according to the time of day, rather than a specific time.  For this reason, we included a recoded variable of shift.  Observations with start times between 7am-11am are considered "morning" shift, those between 12pm-3pm are considered "afternoon" shift, and other start times are coded as "other". The recoded variable for shift is visualized in Figure X.
+
+```{r}
 
 #Boxplot for gender and BMI change stratified for recoded shift
 filter(pracdat, !is.na(gender) & !is.na(shift.recode)) %>% ggplot(aes(x= gender, y =BMI_change, color=gender)) + geom_boxplot() + facet_grid(. ~ shift.recode)+theme_bw()+ ggtitle("Association of BMI Change and Recoded Shift by Gender")+ theme(axis.text.x = element_text(angle=90, vjust=.5,hjust=1))
