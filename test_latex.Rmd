@@ -30,7 +30,7 @@ The purpose of this analysis is to use modern statistical applications to determ
 
 ## Introduction:
 
-Diseases such as obesity, diabetes, coronary heart disease, and musculoskeletal disorders have rapidly increased in the United States in the last decade, which can be partially attributed to the change in office culture to be heavily computer-based and therefore more sedentary. The purpose of our analysis is to answer what is affecting the weight change of employees in a call center.  Lifestyle habits of employees affect rates of obesity and obesity-related diseases in the United States. Descriptive statistics and graphs are used to visualize relationships between different categorical and continuous variables. We will confirm normality for these variables and use log transformation for right skewed distributions. Work shift and total metabolic minutes are two variables at the center of our analysis. We will show their effect on weight gain through exploratory data analysis. Two models have been built to show the statistical significance of certain predictors. The first model uses logistic regression with weight gain (yes/no) being the categorical response variable. Our second model is a multivariate linear model that focuses on the significance of shift start time and total metabolic minutes. The following report records our central ideas and provides evidence for the procedures taken. 
+Diseases such as obesity, diabetes, coronary heart disease, and musculoskeletal disorders have rapidly increased in the United States in the last decade, which can be partially attributed to the change in office culture to be heavily computer-based and therefore more sedentary. Increased prevalence of such diseases are expensive to organizations and influence how productive and efficient workers can be. Lifestyle habits of employees affect rates of obesity and obesity-related diseases in the United States. The purpose of our analysis was to answer what is affecting the weight change of employees in a call center. Descriptive statistics and graphs were used to visualize relationships between different categorical and continuous variables. We confirmed normality for these variables and used log plus one transformation for right skewed distributions. Work shift and total metabolic minutes were two variables at the center of our analysis. We showed their effect on weight gain through exploratory data analysis. Two models have been built to show the statistical significance of certain predictors. The first model used logistic regression with weight gain (yes/no) being the categorical response variable. Our second model was a multivariate linear model that focuses on the significance of shift start time and total metabolic minutes. The following report records our central ideas and provides evidence for the procedures taken. 
 
 ## Data:
 
@@ -85,17 +85,13 @@ Our first graph shows the distribution of total metabolic minutes by increasing 
 The change in BMI over the 8 month study period for the different shift start times is displayed in a boxplot with male and female separated. We see smaller spread of BMI change values for work shifts starting between 11am and 2pm with only one female observation at the 2pm shift being a large outlier. The 8am start time shift is the only time that has a more spread distribution of BMI change for male over female employees. There are less male employees so the mean BMI change for each shift can be pulled higher more easily by the outlier observations. Overall we see larger BMI changes from the morning shifts of both genders. 
 
 ```{r, fig.height=4, fig.width=6, echo = FALSE}
-#solid
-ggplot(na.omit(pracdat), aes(x = Age, y = Total_Met_Min, color = gender)) + geom_line(size = .8) + facet_grid(. ~ gender) + theme_bw() + theme(panel.grid = element_blank())
+#Gender Total Metabolic by Age
+ggplot(na.omit(pracdat), aes(x = Age, y = Total_Met_Min, color = gender)) + geom_line(size = .8) + facet_grid(. ~ gender) + theme_bw() + theme(panel.grid = element_blank()) + ggtitle("Total Metabolic Minutes by Age for Each Gender")
 
+#Change in BMI for Each Time Shift
+ggplot(na.omit(pracdat), aes(x= gender, y = BMI_change)) + geom_boxplot(aes(color = gender)) + facet_grid(. ~ shift) + theme_minimal() + theme(axis.test.x = element_text(angle=90, hjust=1)) + ggtitle("Change in BMI for Each Time Shift")
 
-ggplot(pracdat, aes(x= gender, y =BMI_change)) + geom_boxplot(aes(color = gender)) + facet_grid(. ~ shift)
-
-#solid
-ggplot(na.omit(pracdat), aes(x= gender, y =BMI_change)) + geom_boxplot(aes(color = gender)) + facet_grid(. ~ shift)
-
-#decent
-p1 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(VigTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1)) + xlab("Shift Time") + ylab("Average Vig Time") 
+p1 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(VigTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1)) + xlab("Shift Time") + ylab("Average Vig Time")
 p2 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(WalkTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() +theme(axis.text.x = element_text(angle=90, hjust=1))+ xlab("Shift Time") + ylab("Average Walk Time")
 p3 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(ModTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))+ xlab("Shift Time") + ylab("Average Mod Time")
 p4 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(Total_Met_Min), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))+ xlab("Shift Time") + ylab("Average Total Metabolic Minutes")
