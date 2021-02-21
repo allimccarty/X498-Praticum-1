@@ -248,7 +248,7 @@ Based on preliminary data analysis, we found shift is not a significant predicto
 ## Discussion and Conclusion
 
 
-
+\pagebreak
 ## Appendix 
 
 Test for normality of the continuous variables:
