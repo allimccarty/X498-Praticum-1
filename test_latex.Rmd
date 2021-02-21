@@ -190,7 +190,7 @@ glm(weightgain ~ Total_Met_Min + gender + Age, data = pracdat.mod1, family = "bi
 #weightglm1 = glm(weightgain ~ VigTime + WalkTime + ModTime + gender + Age, data = pracdat.mod1, family = "binomial")
 weightglm2 = glm(weightgain ~ Total_Met_Min + gender + Age, data = pracdat.mod1, family = "binomial")
 #weightglm3 = glm(weightgain ~ shift + gender + Age, data = pracdat.mod1, family = "binomial")
-#weightglm4 = glm(weightgain ~ VigTime + gender + Age, data = pracdat.mod1, family = "binomial")
+#weightglm4 = glm(weightgain ~ shift + gender, data = pracdat.mod1, family = "binomial")
 
 #cv.weight1 = mean(residuals(weightglm1)^2/(1-hatvalues(weightglm1))^2)
 cv.weight2 = mean(residuals(weightglm2)^2/(1-hatvalues(weightglm2))^2)
