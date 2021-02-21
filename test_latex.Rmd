@@ -102,20 +102,22 @@ ggplot(data = pracdat.abnormal , aes(x = value)) + stat_density() + facet_wrap(~
 #Most have an extreme right skew
 ```
 
+Based on the density plots for pounds gained, Vigorous exercise time, moderate exercise time, walk time, and total metabolic minutes, there was an extreme right skew.  Ideally, we would perform a log transformation in this case to alleviate the skew in the data.  However, a log transformation is not feasible in this case due to the large portion of 0-value observations for these variables. Log Transfomations of 0-value data are undefined, and could not be included in our model.  Instead of using the log transformation, we used the cubic root transformation demonstrated in the density plots in Figure X.
+
 ```{r, fig.height=4}
 #Now, let's take a log transformation of all of these variables
-ggplot(data = pracdat.abnormal , aes(x = log(value +1))) + stat_density() + facet_wrap(~variable, scales = "free")
-# Much better
-
+ggplot(data = pracdat.abnormal , aes(x = (value^(1/3)))) + stat_density() + facet_wrap(~variable, scales = "free")+theme_bw()
 
 #Perform the transformation to overall dataframe
-pracdat$lbs_gained <- log(pracdat$lbs_gained+1)
-pracdat$pounds_gained <- log(pracdat$pounds_gained+1)
-pracdat$VigTime <- log(pracdat$VigTime+1)
-pracdat$WalkTime <- log(pracdat$WalkTime+1)
-pracdat$ModTime <- log(pracdat$ModTime+1)
-pracdat$Total_Met_Min <- log(pracdat$Total_Met_Min+1)
+pracdat$lbs_gained <- (pracdat$lbs_gained)^(1/3)
+pracdat$pounds_gained <- (pracdat$pounds_gained)^(1/3)
+pracdat$VigTime <- (pracdat$VigTime)^(1/3)
+pracdat$WalkTime <- (pracdat$WalkTime)^(1/3)
+pracdat$ModTime <- (pracdat$ModTime)^(1/3)
+pracdat$Total_Met_Min <- (pracdat$Total_Met_Min)^(1/3)
 ```
+
+Figure X shows that the cubic root transformation did not perfectly transform the data to normal distributions.  However, the transformation did make the data *more* normal.  Thus, the variables for pounds gained, Vigorous exercise time, moderate exercise time, walk time, and total metabolic minutes are included in EDA and model construction with cubic root transformations.
 
 ### Visuals for Categorical Variables
 
