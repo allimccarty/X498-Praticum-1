@@ -181,15 +181,16 @@ pracdat.mod1$weightgain <- ifelse(pracdat.mod1$weightgain=="Yes",1,0)
 pracdat.mod2 <- subset(pracdat, weightgain == "Yes")
 ```
 
+We created a logistic regression model for our binary dependent variable 'weightgain', yes or no. The model with the best fit contained three predictor variables: Total_Met_Min, gender, and Age. The response will be close to 1 when the person has gained weight and 0 when they have not gained weight over the 8 month period.  
 
 
-Binary WeightGain Model **should use pracdat.mod1**
+glm(weightgain ~ Total_Met_Min + gender + Age, data = pracdat.mod1, family = "binomial")
 
 ```{r}
 #weightglm1 = glm(weightgain ~ VigTime + WalkTime + ModTime + gender + Age, data = pracdat.mod1, family = "binomial")
 weightglm2 = glm(weightgain ~ Total_Met_Min + gender + Age, data = pracdat.mod1, family = "binomial")
-weightglm3 = glm(weightgain ~ shift + gender + Age, data = pracdat.mod1, family = "binomial")
-weightglm4 = glm(weightgain ~ VigTime + gender + Age, data = pracdat.mod1, family = "binomial")
+#weightglm3 = glm(weightgain ~ shift + gender + Age, data = pracdat.mod1, family = "binomial")
+#weightglm4 = glm(weightgain ~ VigTime + gender + Age, data = pracdat.mod1, family = "binomial")
 
 #cv.weight1 = mean(residuals(weightglm1)^2/(1-hatvalues(weightglm1))^2)
 cv.weight2 = mean(residuals(weightglm2)^2/(1-hatvalues(weightglm2))^2)
