@@ -61,31 +61,6 @@ sum(complete.cases(pracdat[6])) #232 of the 352 observations have data for lbs g
 
 
 ### Exploratory Data Analysis:
-
-Visuals for Categorical Variables
-
-```{r}
-ggplot(pracdat, aes(x=Age, y = BMI)) + geom_point(aes(color=gender))
-
-#solid
-ggplot(na.omit(pracdat), aes(x = Age, y = Total_Met_Min, color = gender)) + geom_line(size = .8) + facet_grid(. ~ gender) + theme_bw() + theme(panel.grid = element_blank())
-
-
-ggplot(pracdat, aes(x= gender, y =BMI_change)) + geom_boxplot(aes(color = gender)) + facet_grid(. ~ shift)
-
-#solid
-ggplot(na.omit(pracdat), aes(x= gender, y =BMI_change)) + geom_boxplot(aes(color = gender)) + facet_grid(. ~ shift)
-
-#decent
-p1 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(VigTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1)) + xlab("Shift Time") + ylab("Average Vig Time")
-p2 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(WalkTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() +theme(axis.text.x = element_text(angle=90, hjust=1))+ xlab("Shift Time") + ylab("Average Walk Time")
-p3 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(ModTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))+ xlab("Shift Time") + ylab("Average Mod Time")
-p4 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(Total_Met_Min), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))+ xlab("Shift Time") + ylab("Average Total Metabolic Minutes")
-grid.arrange(p1, p2, p3, p4, nrow = 2)
-
-
-```
-
 Test for normality of the continuous variables:
 
 ```{r}
@@ -120,28 +95,7 @@ pracdat$VigTime <- log(pracdat$VigTime+1)
 pracdat$WalkTime <- log(pracdat$WalkTime+1)
 pracdat$ModTime <- log(pracdat$ModTime+1)
 pracdat$Total_Met_Min <- log(pracdat$Total_Met_Min+1)
-```
 
-**NOTE THAT ANY DATAFRAME AFTER THIS LINE DERIVED FROM PRACDAT HAS LOG TRANSFORMATIONS IN POUNDS GAINED AND EXERCISE MINUTES ESTIMATES**
-
-
-# Now, let's test for collinearity between variables:
-```{r}
-pairs(pracdat[c(3, 7:13)])
-```
-
-The first obvious thing to note is that BMI and body weight are positively correlated.  This should be expected, becuase we caluclated BMI via a linear combination including body weight.
-
-### Model Analysis
-Commentary on lack of data for lbs gained and motivation for building two separate models: 
-
-There are a lot of N/A values for lbs gained because we will not have data for a specific observation unless they gained weight. If a person lost weight in the study, this would be populated as "N/A" for lbs gained (col 6). For the purposes of the second model, we may choose to select the subset of the population who gained weight (have data for this variable)/or did not gain weight (do NOT have data for this variable) and create a model specific to that subset.
-
-
-For Model 1, we will just use the binary weight gain variable to create a logistic model.  For Model 2, we will subset the sample to those who gained weight, and build multiple models to determine which factors influenced this weight gain.
-
-Data Cleaning specific to our models:
-```{r MoreDataCleaning}
 #Create New Grouping Model Based on Shift Time
 shift2 <- pracdat$shift
 #Apologies, there was probably a more elegant way to do this
@@ -158,7 +112,99 @@ shift.recode[shift2 == "3pm"] <- "other"
 shift.recode[shift2 == "other"] <- "other"
 shift.recode[is.na(shift2)] <- NA
 pracdat$shift.recode <- shift.recode
+```
 
+**NOTE THAT ANY DATAFRAME AFTER THIS LINE DERIVED FROM PRACDAT HAS LOG TRANSFORMATIONS IN POUNDS GAINED AND EXERCISE MINUTES ESTIMATES**
+
+# Now, let's test for collinearity between variables:
+```{r}
+pairs(pracdat[c(3, 7:13)])
+```
+
+The first obvious thing to note is that BMI and body weight are positively correlated.  This should be expected, becuase we caluclated BMI via a linear combination including body weight. We also know that the same is true for VigTime, WalkTime, ModTime, and Total Metabolic Minutes.
+
+Visuals for Categorical Variables
+
+```{r}
+#Scatterplot between Age &BMI with gender
+filter(pracdat, !is.na(gender)) %>% ggplot(aes(x=Age, y = BMI, color=gender))+ geom_point()+theme_classic()+geom_smooth(method="lm",se=FALSE)
+
+#Boxplot for Age& Total Met Minutes with gender
+filter(pracdat, !is.na(gender)) %>% ggplot(aes(x = Age, y = Total_Met_Min, color = gender)) + geom_point(size = .8) + facet_grid(. ~ gender) + theme_bw() + theme(panel.grid = element_blank())+theme_classic()
+
+#Boxplot for gender and BMI change stratified for shift
+filter(pracdat, !is.na(gender)) %>% ggplot(aes(x= gender, y =BMI_change, color=gender)) + geom_boxplot() + facet_grid(. ~ shift)+theme_classic()
+#Boxplot for gender and BMI change stratified for recoded shift
+filter(pracdat, !is.na(gender)) %>% ggplot(aes(x= gender, y =BMI_change, color=gender)) + geom_boxplot() + facet_grid(. ~ shift.recode)+theme_classic()
+
+#The difference is more prominant when we are using shift.recode rather than shift.
+
+#Average Vig Time by shift and gender
+p1 <- filter(pracdat, !is.na(gender)) %>% ggplot(aes(x = shift, y = mean(VigTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1)) + xlab("Shift Time") + ylab("Average Vig Time")+theme_classic()
+
+p2 <- filter(pracdat, !is.na(gender)) %>% ggplot(aes(x = shift, y = mean(WalkTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() +theme(axis.text.x = element_text(angle=90, hjust=1))+ xlab("Shift Time") + ylab("Average Walk Time")+theme_classic()
+
+
+# What are these two supposed to be doing?
+#p3 <- ggplot(data=pracdat,aes(x = shift, y = mean(ModTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))+ xlab("Shift Time") + ylab("Average Mod Time")
+#p4 <- filter(pracdat, !is.na(gender)) %>% ggplot(aes(x = shift, y = mean(Total_Met_Min), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, hjust=1))+ xlab("Shift Time") + ylab("Average Total Metabolic Minutes")
+
+grid.arrange(p1, p2, nrow = 2)
+```
+
+
+Lets Look at the association between Metabolic Minutes and pounds gained a little bit closer.
+```{r}
+a1<- ggplot(data=pracdat, aes(x=Total_Met_Min, y=pounds_gained, color=shift))+geom_point()+theme_classic()
+a2 <- ggplot(data=pracdat, aes(x=Total_Met_Min, y=pounds_gained, color=shift.recode))+geom_point()+theme_classic()
+grid.arrange(a1, a2)
+```
+
+This is very interesting.  We can see that the vast majority of the people who did NO metabolic exercise were members of the morning shift.  We cannot really observe this difference when shift is broken down by the hour.
+
+We can also look at this via gender or beginning weight.
+```{r}
+filter(pracdat, !is.na(gender)) %>% ggplot(aes(x=Total_Met_Min, y=pounds_gained, color=gender))+geom_point()+theme_classic()+geom_smooth(method="lm", se=FALSE)
+```
+
+Based on the plot, the association between matabolic minutes and pounds gained may actually be positive for females and negative for males. 
+
+We really want to explore the relationship between variables and binary weight gain, since that is the main endpoint for the logistic model
+```{r}
+filter(pracdat, !is.na(weightgain)) %>% ggplot()+
+  geom_boxplot(mapping = aes(x = weightgain, y=Total_Met_Min))+coord_flip()+theme_classic()
+```
+There really does not appear to be any association between weight gain and metabolic minutes (actually, these are nearly identical)
+
+Now, let's check weight gain and age, height, and BMI:
+```{r}
+check1 <-filter(pracdat, !is.na(weightgain)) %>% ggplot() + geom_boxplot(mapping = aes(x = weightgain, y=Age))+coord_flip()+theme_classic()+ggtitle("Weight Gain by Age")
+check2 <-filter(pracdat, !is.na(weightgain)) %>% ggplot() + 
+  geom_boxplot(mapping = aes(x = weightgain, y=height))+coord_flip()+theme_classic()+ggtitle("Weight Gain by Height")
+check3 <-filter(pracdat, !is.na(weightgain)) %>% ggplot() + 
+  geom_boxplot(mapping = aes(x = weightgain, y=BMI))+coord_flip()+theme_classic()+ggtitle("Weight Gain by BMI")
+grid.arrange(check1, check2, check3)
+#Again, these do not seem to be very different/significant predictors.  Let's try to stratify by gender.
+
+check1.update <- check1+facet_wrap(~gender)
+check2.update <- check2+facet_wrap(~gender)
+check3.update <- check3+facet_wrap(~gender)
+grid.arrange(check1.update, check2.update, check3.update)
+# Nothing here, not worth displaying or trying to remove N/As.
+
+#We can also look more closely about the association between height and BMI, which we know should be correlated
+```
+
+### Model Analysis
+Commentary on lack of data for lbs gained and motivation for building two separate models: 
+
+There are a lot of N/A values for lbs gained because we will not have data for a specific observation unless they gained weight. If a person lost weight in the study, this would be populated as "N/A" for lbs gained (col 6). For the purposes of the second model, we may choose to select the subset of the population who gained weight (have data for this variable)/or did not gain weight (do NOT have data for this variable) and create a model specific to that subset.
+
+
+For Model 1, we will just use the binary weight gain variable to create a logistic model.  For Model 2, we will subset the sample to those who gained weight, and build multiple models to determine which factors influenced this weight gain.
+
+Data Cleaning specific to our models:
+```{r MoreDataCleaning}
 #Create final data frame for Model #1
 pracdat.mod1 <- pracdat[-6:-7]
 #Change Weight Gain Factor Variable to Binary
