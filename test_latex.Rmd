@@ -102,7 +102,7 @@ tr1 = ggplot(data = pracdat.abnormal , aes(x = value)) + stat_density() + facet_
 #Most have an extreme right skew
 ```
 
-Based on the density plots for pounds gained, Vigorous exercise time, moderate exercise time, walk time, and total metabolic minutes, there was an extreme right skew.  Ideally, we would perform a log transformation in this case to alleviate the skew in the data.  However, a log transformation is not feasible in this case due to the large portion of 0-value observations for these variables. Log Transfomations of 0-value data are undefined, and could not be included in our model.  Instead of using the log transformation, we used the cubic root transformation demonstrated in the density plots in Figure X.
+Based on the density plots for pounds gained, Vigorous exercise time, moderate exercise time, walk time, and total metabolic minutes, there was an extreme right skew as seen in figure 1.  Ideally, we would perform a log transformation in this case to alleviate the skew in the data.  However, a log transformation is not feasible in this case due to the large portion of 0-value observations for these variables. Log Transfomations of 0-value data are undefined, and could not be included in our model.  Instead of using the log transformation, we used the cubic root transformation demonstrated in the density plots in Figure 2.
 
 ```{r, fig.height=4}
 #Now, let's take a log transformation of all of these variables
@@ -118,10 +118,10 @@ pracdat$ModTime <- (pracdat$ModTime)^(1/3)
 pracdat$Total_Met_Min <- (pracdat$Total_Met_Min)^(1/3)
 ```
 
-Figure X shows that the cubic root transformation did not perfectly transform the data to normal distributions.  However, the transformation did make the data *more* normal.  Thus, the variables for pounds gained, Vigorous exercise time, moderate exercise time, walk time, and total metabolic minutes are included in EDA and model construction with cubic root transformations.
+Figure 2 shows that the cubic root transformation did not perfectly transform the data to normal distributions.  However, the transformation did make the data *more* normal.  Thus, the variables for pounds gained, Vigorous exercise time, moderate exercise time, walk time, and total metabolic minutes are included in EDA and model construction with cubic root transformations.
 
 
-Next, we wanted to check for collinearity between our variables.  We created a pairs plot in Figure X to visualize the association between the variables in our dataset. 
+Next, we wanted to check for collinearity between our variables.  We created a pairs plot in Figure 3 to visualize the association between the variables in our dataset. 
 
 ```{r}
 panel.cor <- function(x, y, ...)
@@ -138,11 +138,11 @@ pairs(na.omit(pracdat[c(3:4, 7:13)]), upper.panel=panel.cor,labels = names.vecto
 
 The first obvious thing to note is that BMI and body weight are strongly positively correlated (correlation value of .87).  This should be expected, becuase we caluclated BMI via a linear combination including body weight. We also know that the same is true for VigTime, WalkTime, ModTime, and Total Metabolic Minutes.
 
-None of the other variables demonstrate strong linearity, confirmed by the correlation calculation included in the top panel of Figure X.
+None of the other variables demonstrate strong linearity, confirmed by the correlation calculation included in the top panel of Figure 3.
 
 ### Visuals for Categorical Variables
 
-Figure X shows the distribution of total metabolic minutes by increasing age for both genders of employees in the call center study. Female employees see most of their peak total metabolic minutes from the age group 20 to 30. After around age 32 it begins to average out and see a smaller range of values. From age 45 onward the total metabolic minutes stays under 2400 minutes. The male employees have their total metabolic minutes peak just under 7500 minutes. Figure X demonstrates that the relationship between age and total metabolic minutes is slightly negative.  This association is stronger for males compared to females.
+Figure 4 shows the distribution of total metabolic minutes by increasing age for both genders of employees in the call center study. Female employees see most of their peak total metabolic minutes from the age group 20 to 30. After around age 32 it begins to average out and see a smaller range of values. From age 45 onward the total metabolic minutes stays under 2400 minutes. The male employees have their total metabolic minutes peak just under 7500 minutes. Figure 4 demonstrates that the relationship between age and total metabolic minutes is slightly negative.  This association is stronger for males compared to females.
 
 ```{r, fig.height=4, fig.width=6, echo = FALSE}
 #Gender Total Metabolic by Age
@@ -150,7 +150,7 @@ j1 = filter(pracdat, !is.na(gender)) %>% ggplot(aes(x = Age, y = Total_Met_Min, 
 
 ```
 
-We also want to see if there is an association between age & BMI when we stratify for gender.  Figure X demonstrates that there is slightly positive relationship between age and BMI, and the relationship is more dramatic for females compared to males. We should also note that there are number of observations with 0-value inputted for total metabolic minutes.  0-value observations for metabolic minutes are more common for females than males, and tend to be observed most commonly in females under the age of 50 years.
+We also want to see if there is an association between age & BMI when we stratify for gender.  Figure 5 demonstrates that there is slightly positive relationship between age and BMI, and the relationship is more dramatic for females compared to males. We should also note that there are number of observations with 0-value inputted for total metabolic minutes.  0-value observations for metabolic minutes are more common for females than males, and tend to be observed most commonly in females under the age of 50 years.
 
 ```{r}
 #Scatterplot between Age &BMI with gender
@@ -158,7 +158,7 @@ j2 = filter(pracdat, !is.na(gender)) %>% ggplot(aes(x=Age, y = BMI, color=gender
 grid.arrange(j1, j2)
 ```
 
-The change in BMI over the 8 month study period for the different shift start times is displayed in Figure X. We see smaller spread of BMI change values for work shifts starting between 11am and 2pm with only one female observation at the 2pm shift being a large outlier. The 8am start time shift is the only time that has a more spread distribution of BMI change for male over female employees. There are less male employees so the mean BMI change for each shift can be pulled higher more easily by the outlier observations. Overall we see larger BMI changes from the morning shifts of both genders. 
+The change in BMI over the 8 month study period for the different shift start times is displayed in Figure 6. We see smaller spread of BMI change values for work shifts starting between 11am and 2pm with only one female observation at the 2pm shift being a large outlier. The 8am start time shift is the only time that has a more spread distribution of BMI change for male over female employees. There are less male employees so the mean BMI change for each shift can be pulled higher more easily by the outlier observations. Overall we see larger BMI changes from the morning shifts of both genders. 
 
 ```{r}
 #Recode for Shift
@@ -184,7 +184,7 @@ pracdat$shift.recode <- shift.recode
 b1 = filter(pracdat, !is.na(gender)& !is.na(shift.recode)) %>% ggplot(aes(x= gender, y =BMI_change, color=gender)) + geom_boxplot() + facet_grid(. ~ shift)+theme_bw() +labs(caption="Figure 6") + ggtitle("Association of BMI Change and Shift by Gender")+ theme(axis.text.x = element_text(angle=90, vjust=.5,hjust=1)) 
 ```
 
-Overall, due to the high number of stratum in shift, it is difficult to observe changes in distributions and associations for each shift individually.  It may be more helpful to look for associations with other variables and shift according to the time of day, rather than a specific time.  For this reason, we included a recoded variable of shift.  Observations with start times between 7am-11am are considered "morning" shift, those between 12pm-3pm are considered "afternoon" shift, and other start times are coded as "other". The recoded variable for shift is visualized in Figure X.
+Overall, due to the high number of stratum in shift, it is difficult to observe changes in distributions and associations for each shift individually.  It may be more helpful to look for associations with other variables and shift according to the time of day, rather than a specific time.  For this reason, we included a recoded variable of shift.  Observations with start times between 7am-11am are considered "morning" shift, those between 12pm-3pm are considered "afternoon" shift, and other start times are coded as "other". The recoded variable for shift is visualized in Figure 7.
 
 ```{r}
 #Boxplot for gender and BMI change stratified for recoded shift
@@ -195,7 +195,7 @@ grid.arrange(b1, b2)
 
 The difference is more prominent when we are using recoded shift rather than shift.  It appears that individuals with the morning shift experienced a greater change in BMI than individuals with a shift time in the afternoon. Females with a shift time of other also tended to have a greater high-end change in BMI over the study, but there were so few females in this category that the resulting distribution is probably not generalizable. 
 
-Figure X shows the association between metabolic minutes and pounds gained stratified by both shift and recoded shift. The vast majority of the people who did no metabolic exercise were members of the morning shift.  However, it is more difficult to observe this difference when shift is broken down by the hour.
+Figure 8 shows the association between metabolic minutes and pounds gained stratified by both shift and recoded shift. The vast majority of the people who did no metabolic exercise were members of the morning shift.  However, it is more difficult to observe this difference when shift is broken down by the hour.
 ```{r}
 a1<- ggplot(data=pracdat, aes(x=Total_Met_Min, y=pounds_gained, color=shift))+geom_point()+theme_bw()+ggtitle("Pounds Gained and Total Metabolic Minutes by Shift")
 a2 <- ggplot(data=pracdat, aes(x=Total_Met_Min, y=pounds_gained, color=shift.recode))+geom_point()+theme_bw()+ggtitle("Pounds Gained and Total Metabolic Minutes by Recoded Shift") + labs(caption="Figure 8")
@@ -203,7 +203,7 @@ grid.arrange(a1, a2)
 ```
 
 
-Figure X demonstrates the associations of weight gain with age, height, BMI, and metabolic minutes. There does not appear to be any strong patterns for the binary variable weight gain with age, height, BMI, and metabolic minutes.  Thus, we do not suspect that age, height, BMI, or metabolic minutes are strongly indicative of whether a person gained weight or not.
+Figure 9 demonstrates the associations of weight gain with age, height, BMI, and metabolic minutes. There does not appear to be any strong patterns for the binary variable weight gain with age, height, BMI, and metabolic minutes.  Thus, we do not suspect that age, height, BMI, or metabolic minutes are strongly indicative of whether a person gained weight or not.
 
 ```{r}
 check1 <-filter(pracdat, !is.na(weightgain)) %>% ggplot() + geom_boxplot(mapping = aes(x = weightgain, y=Age))+coord_flip()+theme_bw()+ggtitle("Weight Gain by Age")
@@ -218,9 +218,9 @@ grid.arrange(check1, check2, check3, check4, ncol=1)
 ```
 \rightline{Figure 9}
 
-Figure X demonstrates the difference in the association between pounds gained and metabolic minutes for males and females.  The association between metabolic minutes and pounds gained is negative for males.  On the contrary, the association is positive for females.  This is somewhat contradictory to the expected association, but could be attributable to females gaining weight through muscle mass as a result of increased amounts of metabolic exercise.
+Figure 10 demonstrates the difference in the association between pounds gained and metabolic minutes for males and females.  The association between metabolic minutes and pounds gained is negative for males.  On the contrary, the association is positive for females.  This is somewhat contradictory to the expected association, but could be attributable to females gaining weight through muscle mass as a result of increased amounts of metabolic exercise.
 
-```{r}
+```{r, fig.height=4}
 filter(pracdat, !is.na(gender)) %>% ggplot(aes(x=Total_Met_Min, y=pounds_gained, color=gender))+geom_point()+theme_bw()+geom_smooth(method="lm", se=FALSE)+ggtitle("Association between Pounds Gained and Total Metabolic Minutes by Gender")+labs(caption="Figure 10")
 ```
 
