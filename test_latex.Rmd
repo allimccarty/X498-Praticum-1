@@ -82,15 +82,20 @@ sum(complete.cases(pracdat[6])) #232 of the 352 observations have data for lbs g
 
 Our first graph shows the distribution of total metabolic minutes by increasing age for both genders of employees in the call center study. Female employees see most of their peak total metabolic minutes from the age group 20 to 30. After around age 32 it begins to average out and see a smaller range of values. From age 45 onward the total metabolic minutes stays under 2400 minutes. The male employees have their total metabolic minutes peak just under 7500 minutes. The rest of the male call center employees had total metabolic minutes under about 3500 minutes. Male and female employees do not show similar total metabolic minutes distributions for ages 20 to 60.   
 
-The change in BMI over the 8 month study period for the different shift start times is displayed in a boxplot with male and female separated. We see smaller spread of BMI change values for work shifts starting between 11am and 2pm with only one female observation at the 2pm shift being a large outlier. The 8am start time shift is the only time that has a more spread distribution of BMI change for male over female employees. There are less male employees so the mean BMI change for each shift can be pulled higher more easily by the outlier observations. Overall we see larger BMI changes from the morning shifts of both genders. 
-
 ```{r, fig.height=4, fig.width=6, echo = FALSE}
 #Gender Total Metabolic by Age
 ggplot(na.omit(pracdat), aes(x = Age, y = Total_Met_Min, color = gender)) + geom_line(size = .8) + facet_grid(. ~ gender) + theme_bw() + theme(panel.grid = element_blank()) + ggtitle("Total Metabolic Minutes by Age for Each Gender")
+```
 
+The change in BMI over the 8 month study period for the different shift start times is displayed in a boxplot with male and female separated. We see smaller spread of BMI change values for work shifts starting between 11am and 2pm with only one female observation at the 2pm shift being a large outlier. The 8am start time shift is the only time that has a more spread distribution of BMI change for male over female employees. There are less male employees so the mean BMI change for each shift can be pulled higher more easily by the outlier observations. Overall we see larger BMI changes from the morning shifts of both genders. 
+
+```{r}
 #Change in BMI for Each Time Shift
 ggplot(na.omit(pracdat),aes(x=gender,y=BMI_change)) + geom_boxplot(aes(color=gender)) + facet_grid(. ~ shift)+ theme(axis.text.x = element_text(angle=90,vjust=.5,hjust=1)) + ggtitle("Change in BMI for Each Time Shift")
+```
+The next four visuals show average exercise time in minutes by gender for different intensity exercises. The three intensity measures are vigorous, moderate, and walking. Vigorous being the high-intensity exercise. The fourth barplot uses the three intensities to calculate total metabolic minutes. 
 
+```{r}
 #Average Times by Gender for Each Shift
 p1 <- ggplot(na.omit(pracdat), aes(x = shift, y = mean(VigTime), fill=gender)) + geom_bar(stat="identity") + theme_minimal() + theme(axis.text.x = element_text(angle=90, vjust=.5, hjust=1)) + xlab("Shift Time") + ylab("Average Vig Time") + scale_x_discrete(limits=c('7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', "other")) 
 
