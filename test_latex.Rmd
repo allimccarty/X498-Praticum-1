@@ -1,7 +1,7 @@
 ---
-title: "Technical Report"
+title: "An Analysis of Work Shift, Metabolic Minutes, and other Covariates on Weight Loss"
 author: "Jordan Majoros, Alli McCarty, Joe Spatz"
-date: "2/15/2021"
+date: "2/21/2021"
 output: pdf_document
 ---
 
@@ -21,16 +21,17 @@ library(gridExtra)
 library(ggpubr)
 library(ggthemes)
 library(mgcv)
+
 ```
 
 
 ## Abstract:
 
-The purpose of this analysis is to use modern statistical applications to determine what variables, with a particular emphasis on minutes of metabolic exercise and time of work shift, influence weight gain in Americans.  The data comes from a self-report questionnaire administered by a call center over an eight month period.  The data was processed and exploratory data analysis was performed to gain insight into basic trends and collinearity between variables.  Several transformations were performed on variables with skewed distributions, and the most important variables were selected via nonparametric analysis to be included in our models.  Two models were constructed; a logistic regression model to obtain binary predictions on weight gain, and a generalized additive model using various predictors to estimate weight gain in pounds. The model fits were cross validated via ***WHAT??* and residual analysis was performed.
+The purpose of this analysis is to use modern statistical applications to determine what variables, with a particular emphasis on minutes of metabolic exercise and time of work shift, influence weight gain in Americans.  The data comes from a self-report questionnaire administered by a call center over an eight month period.  The data was processed and exploratory data analysis was performed to gain insight into basic trends and collinearity between variables.  Several transformations were performed on variables with skewed distributions, and the most important variables were selected via nonparametric analysis to be included in our models.  Two models were constructed; a logistic regression model to obtain binary predictions on weight gain, and a generalized additive model using various predictors to estimate weight gain in pounds. The model fits were cross validated and residual analysis was performed.
 
 ## Introduction:
 
-Diseases such as obesity, diabetes, coronary heart disease, and musculoskeletal disorders have rapidly increased in the United States in the last decade, which can be partially attributed to the change in office culture to be heavily computer-based and therefore more sedentary. Increased prevalence of such diseases are expensive to organizations and influence how productive and efficient workers can be. Lifestyle habits of employees affect rates of obesity and obesity-related diseases in the United States. The purpose of our analysis was to answer what is affecting the weight change of employees in a call center. Descriptive statistics and graphs were used to visualize relationships between different categorical and continuous variables. We confirmed normality for these variables and used log plus one transformation for right skewed distributions. Work shift and total metabolic minutes were two variables at the center of our analysis. We showed their effect on weight gain through exploratory data analysis. Two models have been built to show the statistical significance of certain predictors. The first model used logistic regression with weight gain (yes/no) being the categorical response variable. Our second model was a multivariate linear model that focuses on the significance of shift start time and total metabolic minutes. The following report records our central ideas and provides evidence for the procedures taken. 
+Diseases such as obesity, diabetes, coronary heart disease, and musculoskeletal disorders have rapidly increased in the United States in the last decade, which can be partially attributed to the change in office culture to be heavily computer-based and therefore more sedentary. Increased prevalence of such diseases are expensive to organizations and influence how productive and efficient workers can be. Lifestyle habits of employees affect rates of obesity and obesity-related diseases in the United States. The purpose of our analysis was to answer what is affecting the weight change of employees in a call center. Descriptive statistics and graphs were used to visualize relationships between different categorical and continuous variables. We confirmed normality for these variables and used a cubic root transformation for right skewed distributions. Work shift and total metabolic minutes were two variables at the center of our analysis. We showed their effect on weight gain through exploratory data analysis. Two models have been built to show the statistical significance of certain predictors. The first model used logistic regression with weight gain (yes/no) being the categorical response variable. Our second model was a multivariate linear model that focuses on the significance of shift start time and total metabolic minutes. The following report records our central ideas and provides evidence for the procedures taken. 
 
 ## Data:
 
@@ -74,16 +75,8 @@ sum(complete.cases(pracdat[1])) #348 out of 352 observations have data on shift
 sum(complete.cases(pracdat[5])) #348 out of 352 observations have data on binary weight gain
 sum(complete.cases(pracdat[13])) #351 of the 352 observations have metabolic minutes data (meaning they also have data on walk, vig, and mod ex time)
 sum(complete.cases(pracdat[6])) #232 of the 352 observations have data for lbs gained
-
-#Table of Descriptive Statistics:
-quandat <- stat.desc(pracdat[3:13])
-options(scipen=100)
-options(digits=2)
-descriptives.df <- stat.desc(pracdat[c(3:4, 7:13)], basic = F)
-names(descriptives.df) <- c("Age", "Height", "Pounds Gaines", "Body Weight", "BMI", "Vigorous Activity Minutes", "Walking Minutes", "Moderate Activity Minutes", "Total Metabolic Minutes")
-descriptives.df <- descriptives.df[-c(4, 5), ]
-formattable(descriptives.df, align =c("l", rep("c", rep(6)), "r"), caption = "Descriptive Statistics for Quantitative Variables")
 ```
+
 
 ## Exploratory Data Analysis:
 
@@ -102,7 +95,7 @@ tr1 = ggplot(data = pracdat.abnormal , aes(x = value)) + stat_density() + facet_
 #Most have an extreme right skew
 ```
 
-Based on the density plots for pounds gained, Vigorous exercise time, moderate exercise time, walk time, and total metabolic minutes, there was an extreme right skew as seen in figure 1.  Ideally, we would perform a log transformation in this case to alleviate the skew in the data.  However, a log transformation is not feasible in this case due to the large portion of 0-value observations for these variables. Log Transfomations of 0-value data are undefined, and could not be included in our model.  Instead of using the log transformation, we used the cubic root transformation demonstrated in the density plots in Figure 2.
+Based on the density plots for pounds gained, Vigorous exercise time, moderate exercise time, walk time, and total metabolic minutes, there was an extreme right skew as seen in figure 1.  Ideally, we would perform a log transformation in this case to alleviate the skew in the data.  However, a log transformation is not feasible in this case due to the large portion of 0-value observations for these variables. Log transformations of 0-value data are undefined, and could not be included in our model.  Instead of using the log transformation, we used the cubic root transformation demonstrated in the density plots in Figure 2.
 
 ```{r, fig.height=4}
 #Now, let's take a log transformation of all of these variables
@@ -136,7 +129,7 @@ pairs(na.omit(pracdat[c(3:4, 7:13)]), upper.panel=panel.cor,labels = names.vecto
 ```
 \rightline{Figure 3}
 
-The first obvious thing to note is that BMI and body weight are strongly positively correlated (correlation value of .87).  This should be expected, becuase we caluclated BMI via a linear combination including body weight. We also know that the same is true for VigTime, WalkTime, ModTime, and Total Metabolic Minutes.
+The first obvious thing to note is that BMI and body weight are strongly positively correlated (correlation value of .87).  This should be expected, because we calculated BMI via a linear combination including body weight. We also know that the same is true for VigTime, WalkTime, ModTime, and Total Metabolic Minutes.
 
 None of the other variables demonstrate strong linearity, confirmed by the correlation calculation included in the top panel of Figure 3.
 
@@ -259,13 +252,15 @@ pracdat.mod1$weightgain <- ifelse(pracdat.mod1$weightgain=="Yes",1,0)
 pracdat.mod2 <- subset(pracdat, weightgain == "Yes")
 ```
 
+### Logistic Model
+
 We created a logistic regression model for our binary dependent variable 'weightgain', yes or no. The model with the best fit contained three predictor variables: Total_Met_Min, gender, and Age. The response will be close to 1 when the person has gained weight and 0 when they have not gained weight over the 8 month period.
 
-glm(weightgain ~ Total_Met_Min + gender + Age, data = pracdat.mod1, family = "binomial")
+glm(weightgain ~ shift.recode + Total_Met_Min + gender + Age, data = pracdat.mod1, family = "binomial")
 
 ```{r}
 #weightglm1 = glm(weightgain ~ VigTime + WalkTime + ModTime + gender + Age, data = pracdat.mod1, family = "binomial")
-weightglm2 = glm(weightgain ~ Total_Met_Min + gender + Age, data = pracdat.mod1, family = "binomial")
+weightglm2 = glm(weightgain ~shift.recode + Total_Met_Min + gender + Age, data = pracdat.mod1, family = "binomial")
 #weightglm3 = glm(weightgain ~ shift + gender + Age, data = pracdat.mod1, family = "binomial")
 #weightglm4 = glm(weightgain ~ shift + gender, data = pracdat.mod1, family = "binomial")
 
@@ -277,7 +272,7 @@ cv.weight2 = mean(residuals(weightglm2)^2/(1-hatvalues(weightglm2))^2)
 #data.frame(cv.weight1,cv.weight2,cv.weight3,cv.weight4)
 ```
 
-Table 1
+Table 2
 ```{r}
 favorite.table <- summary(weightglm2)$coefficients
 kable(favorite.table, digits=5)
@@ -286,14 +281,22 @@ plot(weightglm2)
 ```
 \rightline{Figure 11}
 
-Multivariate Linear Model - only GAINED
+When observing the significance of each variable in the model, the only significant metric was gender. On average, males gained 0.5 pounds less than females. Shift and total metabolic minutes were not significant in the model. 
+
+When analyzing the plots from the binary model, the residual versus fitted model appear to have homoskedastic data, where the results are evenly spaced about the 0-line. 
+
+
+### Multivariate Linear Model
+
+
+glm(lbs_gained ~ shift.recode + Total_Met_Min + Age  + gender, data = pracdat.mod2)
+
 ```{r}
 #length(pracdat.mod2$lbs_gained)
 #length(pracdat.mod2$shift)
-multi.mod1 = glm(lbs_gained ~ shift + Total_Met_Min, data = pracdat.mod2)
-multi.mod2 = glm(lbs_gained ~ shift + Total_Met_Min + Age, data = pracdat.mod2)
+multi.mod1 = glm(lbs_gained ~ shift.recode + Total_Met_Min, data = pracdat.mod2)
+multi.mod2 = glm(lbs_gained ~ shift.recode + Total_Met_Min + Age, data = pracdat.mod2)
 multi.mod3 = glm(lbs_gained ~ shift + Total_Met_Min + Age  + gender, data = pracdat.mod2)
-
 
 #summary(multi.mod1)
 
@@ -302,7 +305,7 @@ cv.weight3 = mean(residuals(multi.mod2)^2/(1-hatvalues(multi.mod2))^2)
 cv.weight4 = mean(residuals(multi.mod3)^2/(1-hatvalues(multi.mod3))^2)
 ```
 
-Table 2
+Table 3
 ```{r}
 #data.frame(c(cv.weight1, cv.weight3, cv.weight4))
 newtable <- summary(multi.mod3)$coefficients
@@ -313,10 +316,17 @@ plot(multi.mod3)
 ```
 \rightline{Figure 12}
 
-Based on preliminary data analysis, we found shift is not a significant predictor. We found that 7-8 am are significant, which is an interesting perspective on morning versus afternoon shifts. 
+Based on preliminary data analysis, we found shifts from 9am-onward, total metabolic minutes, age, and gender are not a significant predictors. We found that only 7-8am are significant, which is an interesting perspective on morning versus afternoon shifts. 
+
+Upon residual analysis of the model, the data appears to be homoskedastic where the residuals are fairly dispersed throughout the fitted values. The model produced a normal qq-plot that follows the line of normality. 
 
 ## Discussion and Conclusion
 
+Throughout the analysis, we did not find any information that was conclusive. Regarding our specific aims to discover the relationship between weight gain and total metabolic minutes as well as shift time, neither of the variables revealed to be significant in the models. 
+
+The study itself, particularly relating to data collection, had weak points in its design. Questionnaires, **especially** about an individual's self-reporting of their weight, are not always reliable. This should be taken into account when questioning the validity of the data and the correctness of fits of the models. Some of the variables were designed in a way that limited a wider analysis, such as the positive gain in weight instead of a net change in weight.
+
+In the future, it would be beneficial to be brought in sooner for data collection. For example, as discussed above with the variable for change in weight, we would be able to understand an individual's weight journey better if we could see the extent to which they lost weight as well. Another future change could be to make the study more generalizable, where there are subsets of individuals with the same intent of weight change, such as a group of those who are all underweight and want to gain weight, or those who are deemed overweight and want to lost weight. In the study currently, the participants are all grouped together, and it would be helpful to understand an individual's intents and actions based on more specifics. 
 
 \pagebreak
 ## Appendix 
