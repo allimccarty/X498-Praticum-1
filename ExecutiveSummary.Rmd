@@ -1,0 +1,28 @@
+---
+title: "An Analysis of Work Shift, Metabolic Minutes, and other Covariates on Weight Loss"
+author: "Jordan Majoros, Alli McCarty, Joe Spatz"
+date: "2/27/2021"
+output: pdf_document
+---
+
+Diseases such as obesity, diabetes, coronary heart disease, and musculoskeletal disorders have rapidly increased in the United States in the last decade, which can be partially attributed to the change in office culture to be heavily computer-based and therefore more sedentary.  Increased prevalence of such diseases are expensive to organizations and negatively influence workplace productivity. The goal of the study and the corresponding statistical analysis was to determine how lifestyle factors affect rates of obesity in the United States. The study was administered by a call center that monitored health metrics of their employees over an eight month period.  The original dataset with no modifications contained 392 observations of the 85 variables. Once we performed baseline data processing and selected relevant variables, we obtained 352 observations of 13 variables.  Additionally, two more variables were computed to represent change in BMI over the course of the study and shift time category (morning, afternoon, other). The goal of exploratory data analysis and definitive statistical analysis was to address two specific aims:
+
+1. Does total metabolic minutes have an effect on weight gain?
+2. Does shift have an effect on weight gain?
+
+Exploratory data analysis was performed to visualize the distribution and association of the
+independent variables. The variables for pounds gained, Vigorous exercise time, moderate 
+demonstrated extreme right skews exercise time, walk time, and total metabolic minutes were included
+ in EDA and model construction with cubic root transformations.  We did not observe significant
+instances of collinearity between variables, with the exception of variables that were linear combinations,
+which was expected.
+
+Two models were formed in order to best understand the significance of total metabolic minutes and shift in relation to weight gain. The first model was a logistic model that used the binary variable of whether weight was gained as the dependent variable. The model contained four predictor variables total: shift (recoded to time of day), metabolic minutes, gender, and Age. The only significant variable was gender, where males gained half a pound less than females. In the second model, a subset was taken from the sample of only those who strictly gained weight. The model contained the same four variables as the first model. The only significant variable was the morning time from shifts. 
+
+Upon conclusion of the analysis and modeling, there was no significant information regarding the importance of shift or total metabolic minutes. Neither of the variables appeared significant in the models. **ADD MORE**
+
+In the future, if the team were to approach this problem again, it would be most beneficial to work with the project planning before data was collected. There are variables that would be helpful to analyze, such as a metric that records a total weight change, positive or negative. With this number, we could understand both sides of the experiment, both losing and gaining weight, both of which are equally important to monitor for health. 
+
+
+
+
