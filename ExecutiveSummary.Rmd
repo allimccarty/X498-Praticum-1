@@ -23,6 +23,14 @@ Two models were formed in order to best understand the significance of total met
 
 Upon conclusion of the analysis and modeling, there was no significant information regarding the importance of shift or total metabolic minutes. Neither of the variables appeared significant in the models. **ADD MORE**
 
+---- DO NOT INCLUDE
+**Notes for Jordan** : Maybe some reasons that we did not see any significant variables could include: this was an observational, self-reported study; there was a high censorship rate; and no stratified analysis was performed (we would not expect underweight or healthy participants to loose a significant amount of weight regardless of other variables such as gender, shift, or MET because they simply do not need to lose weight.  Additionally, the focus of the problem is how obesity and obseity-related problems affect workplace productivity.  Including healthy and underweight people inthe study seems a little irrelevant to analyze this impact)
+
+**Another thought about the Model Design** IF the individual is underweight or healthy weight, their prediction for binary weight gain should be "NO".  Then, construct the gam/glm based for the remaining observations.  Alternatively, we could have recoded BMI to underweight/healthy/overweight/obsese and regressed on those.
+----
+
+In the short term, we propose adjusting the specific aims to focus on the effect of shift and MET specifically for individuals who qualify as overweight or obsese.  In the long term, a similar study could be perfomed *ALLI FIX: but bring in the statistician sooner*
+
 In the future, if the team were to approach this problem again, it would be most beneficial to work with the project planning before data was collected. There are variables that would be helpful to analyze, such as a metric that records a total weight change, positive or negative. With this number, we could understand both sides of the experiment, both losing and gaining weight, both of which are equally important to monitor for health. 
 
 
