@@ -201,12 +201,16 @@ Figure 9 demonstrates the associations of weight gain with age, height, BMI, and
 ```{r}
 check1 <-filter(pracdat, !is.na(weightgain)) %>% ggplot() + geom_boxplot(mapping = aes(x = weightgain, y=Age))+coord_flip()+theme_bw()+ggtitle("Weight Gain by Age")
 check2 <-filter(pracdat, !is.na(weightgain)) %>% ggplot() + 
-  geom_boxplot(mapping = aes(x = weightgain, y=height))+coord_flip()+theme_bw()+ggtitle("Weight Gain by Height")
+  geom_boxplot(mapping = aes(x = weightgain, y=height))+coord_flip()+theme_bw()+ggtitle("Weight Gain by Height")+theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
 check3 <-filter(pracdat, !is.na(weightgain)) %>% ggplot() + 
   geom_boxplot(mapping = aes(x = weightgain, y=BMI))+coord_flip()+theme_bw()+ggtitle("Weight Gain by BMI")
 check4 <- filter(pracdat, !is.na(weightgain)) %>% ggplot()+
-  geom_boxplot(mapping = aes(x = weightgain, y=Total_Met_Min))+coord_flip()+theme_bw()+ggtitle("Weight Gain by Total Metabolic Minutes") 
-grid.arrange(check1, check2, check3, check4, ncol=1)
+  geom_boxplot(mapping = aes(x = weightgain, y=Total_Met_Min))+coord_flip()+theme_bw()+ggtitle("Weight Gain by MET")+theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+grid.arrange(check1, check2, check3, check4, ncol=2)
 #Again, these do not seem to be very different/significant predictors.  Let's try to stratify by gender.
 ```
 \rightline{Figure 9}
