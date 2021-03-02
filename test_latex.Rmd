@@ -37,7 +37,7 @@ Diseases such as obesity, diabetes, coronary heart disease, and musculoskeletal 
 
 Three additional variables were calculated using the given data and added to the dataset to give more depth to BMI. The participants of the call center study provided their height, number of pounds gained during the eight month period, and body weight at the end as well. With those values, the ending BMI was calculated. To make the ending BMI more valuable we used the provided data to calculate the BMI for each participant before starting the 8 month study. First, the beginning body weight was found using the pounds gained and the weight of the participant at the end. Then the starting BMI was calculated using the formula below with weight measured in pounds and the height the participant presented in inches.
 
-				BMI = 703 * weight (lbs) / [height (inches)]^2
+				$$BMI = 703 * weight (lbs) / [height (inches)]^2$$
 				
 Change in BMI was then calculated subtracting the starting BMI from the ending BMI. Many participants did not gain weight so their change in BMI was zero. Percentage BMI change over the 8 month period could have also been calculated by dividing the BMI difference and beginning BMI but that was not included as an additional variable. Analyzing the change in BMI can have advantages over strictly pounds gain if a participant increased their height or started at a below average weight given they are taller than average.  
 
@@ -296,7 +296,7 @@ glm(lbs_gained ~ shift.recode + Total_Met_Min + Age  + gender, data = pracdat.mo
 #length(pracdat.mod2$shift)
 multi.mod1 = glm(lbs_gained ~ shift.recode + Total_Met_Min, data = pracdat.mod2)
 multi.mod2 = glm(lbs_gained ~ shift.recode + Total_Met_Min + Age, data = pracdat.mod2)
-multi.mod3 = glm(lbs_gained ~ shift + Total_Met_Min + Age  + gender, data = pracdat.mod2)
+multi.mod3 = glm(lbs_gained ~ shift.recode + Total_Met_Min + Age  + gender, data = pracdat.mod2)
 
 #summary(multi.mod1)
 
